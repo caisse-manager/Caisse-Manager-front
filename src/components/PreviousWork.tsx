@@ -20,16 +20,16 @@ const restaurants = [
     adresse: "Hay Riad Avenue Annakhil",
   },
   {
-    video: "/clients/lma3loma.mp4",
-    nom: "Lma3loma",
+    video: "/clients/Tratoria21.mp4",
+    nom: "Tratoria21",
     ville: "Casablanca",
-    adresse: "Maarif, Bd Zerktouni",
+    adresse: "Rue Moutaz El Falaki, Mâarif",
   },
   {
-    video: "/clients/TheView360.mp4",
-    nom: "The View 360",
+    video: "/clients/Room21.mp4",
+    nom: "Room 21",
     ville: "Casablanca",
-    adresse: "ain sbaa, Bd Zerktouni",
+    adresse: "18 Rue Normandie",
   },
   {
     video: "/clients/fried.mp4",
@@ -230,7 +230,6 @@ export default function ClientsSection() {
                 src={restau.video}
                 autoPlay={false}
                 loop
-                muted
                 playsInline
                 className="w-full h-full object-cover transition-all duration-500"
                 style={{

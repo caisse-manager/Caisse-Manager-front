@@ -154,7 +154,6 @@ export default function BrandShowcase() {
           })
         },
         onLeaveBack: () => {
-          // Reset current logo to gray when leaving backwards
           gsap.to(img, {
             filter: "grayscale(100%) brightness(0.9)",
             duration: 0.2,
