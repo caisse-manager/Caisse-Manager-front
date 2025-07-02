@@ -68,7 +68,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Useful Links */}
           <div>
             <h3 className="text-lg font-medium mb-6">Liens Utiles</h3>
             <ul className="space-y-4">

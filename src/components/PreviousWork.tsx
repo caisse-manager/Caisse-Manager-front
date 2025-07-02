@@ -20,24 +20,24 @@ const restaurants = [
     adresse: "Hay Riad Avenue Annakhil",
   },
   {
-    video: "/clients/lma3loma.mp4",
-    nom: "Lma3loma",
+    video: "/clients/Tratoria21.mp4",
+    nom: "Tratoria21",
     ville: "Casablanca",
-    adresse: "Maarif, Bd Zerktouni",
+    adresse: "Rue Moutaz El Falaki, Mâarif",
   },
   {
-    video: "/clients/TheView360.mp4",
-    nom: "The View 360",
+    video: "/clients/Room21.mp4",
+    nom: "Room 21",
     ville: "Casablanca",
-    adresse: "ain sbaa, Bd Zerktouni",
+    adresse: "18 Rue Normandie",
   },
   {
-    video: "/clients/videoplayback.mp4",
+    video: "/clients/fried.mp4",
     nom: "Fried",
     ville: "Casablanca",
     adresse: "Maarif, Bd Zerktouni",
-  }
-];
+  },
+]
 
 export default function ClientsSection() {
   const sectionRef = useRef<HTMLElement | null>(null)
@@ -57,11 +57,12 @@ export default function ClientsSection() {
 
     const cards = gsap.utils.toArray(".client-card") as HTMLElement[]
     const ctaCard = document.querySelector(".cta-card") as HTMLElement
+    const redCircle = ctaCard?.querySelector(".cta-circle") as HTMLElement
 
     const calculateTrackWidth = () => {
       const trackWidth = track.scrollWidth
       const viewportWidth = window.innerWidth
-      return trackWidth - viewportWidth + 200 
+      return trackWidth - viewportWidth + 200
     }
 
     const tl = gsap.timeline({
@@ -76,10 +77,10 @@ export default function ClientsSection() {
         invalidateOnRefresh: true,
         onUpdate: self => {
           if (self.progress > 0) {
-            section.style.visibility = 'visible'
+            section.style.visibility = "visible"
           }
         },
-        markers: false 
+        markers: false,
       },
     })
 
@@ -88,7 +89,9 @@ export default function ClientsSection() {
       ease: "none",
     })
 
-    const restaurantCards = cards.filter((card) => !card.classList.contains("cta-card"))
+    const restaurantCards = cards.filter(
+      card => !card.classList.contains("cta-card")
+    )
 
     restaurantCards.forEach((card, index) => {
       const info = card.querySelector(".client-info") as HTMLElement
@@ -148,43 +151,41 @@ export default function ClientsSection() {
       })
     })
 
-    if (ctaCard) {
+    if (ctaCard && redCircle) {
       gsap.set(ctaCard, { scale: 1, y: 0 })
+      gsap.set(redCircle, { scale: 1 })
+
       ScrollTrigger.create({
         trigger: ctaCard,
         containerAnimation: tl,
         start: "left center",
-        end: "right center",
+        end: "right center",       
         onEnter: () => {
-          gsap.to(ctaCard, { scale: 1.05, y: -50, duration: 0.8, ease: "power2.out" })
+          gsap.to(ctaCard, { scale: 1, y: -50, duration: 0.2, ease: "power2.out" })
+          gsap.to(redCircle, { scale: 20.6, duration: 0.2, ease: "power2.out" })
         },
         onLeave: () => {
-          gsap.to(ctaCard, { scale: 1, y: 0, duration: 0.6, ease: "power2.inOut" })
+          gsap.to(ctaCard, { scale: 1, y: 0, duration: 0.1, ease: "power2.inOut" })
+          gsap.to(redCircle, { scale: 1, duration: 0.1, ease: "power2.inOut" })
         },
         onEnterBack: () => {
-          gsap.to(ctaCard, { scale: 1.05, y: -50, duration: 0.8, ease: "power2.out" })
+          gsap.to(ctaCard, { scale: 1.05, y: 50, duration: 0.2, ease: "power2.out" })
+          gsap.to(redCircle, { scale: 20.1, duration: 0.2, ease: "power2.out" })
         },
         onLeaveBack: () => {
-          gsap.to(ctaCard, { scale: 1, y: 0, duration: 0.6, ease: "power2.inOut" })
+          gsap.to(ctaCard, { scale: 1, y: 0, duration: 0.1, ease: "power2.inOut" })
+          gsap.to(redCircle, { scale: 1, duration: 0.1, ease: "power2.inOut" })
         },
       })
     }
 
     ScrollTrigger.refresh(true)
 
-    const handleResize = () => {
-      ScrollTrigger.refresh(true)
-    }
-
+    const handleResize = () => ScrollTrigger.refresh(true)
     window.addEventListener("resize", handleResize)
 
-    const observer = new ResizeObserver(() => {
-      ScrollTrigger.refresh(true)
-    })
-
-    if (track) {
-      observer.observe(track)
-    }
+    const observer = new ResizeObserver(() => ScrollTrigger.refresh(true))
+    if (track) observer.observe(track)
 
     return () => {
       ScrollTrigger.getAll().forEach(st => {
@@ -198,21 +199,22 @@ export default function ClientsSection() {
   }, [])
 
   return (
-    <section 
-      ref={sectionRef} 
-      id="clients-section" 
+    <section
+      ref={sectionRef}
+      id="clients-section"
       className="relative h-screen bg-white dark:bg-black overflow-visible"
       style={{ visibility: "visible" }}
     >
       <h2 className="text-6xl font-black text-center text-black dark:text-white py-10 mb-10 tracking-tight">
-        Nos Clients
+        Previous Work
       </h2>
       <div ref={trackRef} className="flex w-max items-center gap-15 px-20">
         <div className="shrink-0" style={{ width: "20vw" }}></div>
+
         {restaurants.map((restau, index) => (
           <div
             key={`${restau.nom}-${restau.ville}-${index}`}
-            className="client-card min-w-[250px] h-[850px] px-6 py-8 bg-black rounded-3xl shadow-2xl flex flex-col items-center justify-between text-white text-xl font-semibold gap-6"
+            className="client-card min-w-[400px] h-[850px] px-6 py-8 rounded-3xl shadow-2xl flex flex-col items-center justify-between text-white text-xl font-semibold gap-6"
           >
             <div className="relative w-[400px] h-[850px] rounded-2xl overflow-hidden">
               <video
@@ -228,13 +230,13 @@ export default function ClientsSection() {
                 src={restau.video}
                 autoPlay={false}
                 loop
-                muted
                 playsInline
                 className="w-full h-full object-cover transition-all duration-500"
                 style={{
-                  filter: activeCardIndex === index
-                    ? "grayscale(0) brightness(1.1) contrast(1.1)"
-                    : "grayscale(1) brightness(0.8)"
+                  filter:
+                    activeCardIndex === index
+                      ? "grayscale(0) brightness(1.1) contrast(1.1)"
+                      : "grayscale(1) brightness(0.8)",
                 }}
                 onLoadStart={e => {
                   const video = e.target as HTMLVideoElement
@@ -245,32 +247,33 @@ export default function ClientsSection() {
               </video>
             </div>
             <div className="client-info text-center">
-              <h3 className="text-3xl font-black text-white  tracking-tight leading-tight">{restau.nom}</h3>
+              <h3 className="text-3xl font-black text-white tracking-tight leading-tight">
+                {restau.nom}
+              </h3>
               <p className="text-xl text-gray-300 font-semibold mb-12">
-                <span className="font-bold text-white tracking-tight leading-tight">{restau.ville}</span>,{" "}
-                {restau.adresse}
+                <span className="font-bold text-white tracking-tight leading-tight">
+                  {restau.ville}
+                </span>
+                , {restau.adresse}
               </p>
             </div>
           </div>
-        ))}
-        <div className="client-card cta-card min-w-[400px] h-[600px] bg-[#111] dark:bg-[#111] rounded-3xl shadow-2xl cursor-pointer group overflow-hidden relative transition-colors duration-500 ease-in-out hover:bg-white dark:hover:bg-white">
+        ))}        <div className="client-card cta-card min-w-[400px] h-[600px] bg-[#111] dark:bg-[#111] rounded-3xl shadow-2xl cursor-pointer group overflow-hidden relative">
           <div className="h-full flex items-center justify-center px-8 py-12">
-            <a
-              href="/case-studies"
-              className="flex items-center gap-6 text-white font-medium transform transition-all duration-500 group-hover:text-black"
-            >
-              <div className="relative w-14 h-14 transition-all duration-700 group-hover:scale-150">
-                <div className="absolute inset-0 rounded-full bg-red-500 flex items-center justify-center transition-all duration-700 group-hover:scale-1500" />
-                <span className="absolute inset-0 flex items-center justify-center text-white text-2xl font-bold pointer-events-none">
+            <div className="relative flex items-center gap-6">
+              <div className="relative w-14 h-14 z-0">
+                <div className="cta-circle absolute inset-0 rounded-full bg-red-500 transition-transform duration-700"></div>
+                <span className="absolute inset-0 flex items-center justify-center text-white text-2xl font-bold z-10 pointer-events-none">
                   →
                 </span>
               </div>
-              <span className="relative text-white text-xl font-semibold z-10 transition-all duration-500">
+              <span className="relative text-white text-xl font-semibold z-10">
                 Voir tous nos clients
               </span>
-            </a>
+            </div>
           </div>
         </div>
+
         <div className="shrink-0" style={{ width: "20vw" }}></div>
       </div>
     </section>

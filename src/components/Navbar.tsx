@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Dialog, DialogPanel } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
-import ThemeToggle from './ThemeToggle'
+// import ThemeToggle from './ThemeToggle'
 
 const navigation = [
   { name: 'Home', href: '#' },
@@ -53,11 +53,11 @@ export default function NavBar() {
             <a href="#" className="text-sm font-semibold hover:underline text-black dark:text-white">
               Log in <span aria-hidden="true">&rarr;</span>
             </a>
-            <ThemeToggle />
+            {/* <ThemeToggle /> */}
           </div>
 
           <div className="flex lg:hidden items-center gap-2">
-            <ThemeToggle />
+            {/* <ThemeToggle /> */}
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
@@ -109,7 +109,7 @@ export default function NavBar() {
               >
                 Log in →
               </a>
-              <ThemeToggle />
+              {/* <ThemeToggle /> */}
             </div>
           </DialogPanel>
         </Dialog>

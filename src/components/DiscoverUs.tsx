@@ -1,10 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
-import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 
 import bgImage from "@/assets/restaurant-bg.jpg";
@@ -24,96 +22,217 @@ const services = [
 ];
 
 const textLines = [
-  "On ne crée pas juste des caisses,",
-  "on écrit chaque jour",
-  "l’histoire des commerçants",
-  "qui veulent aller plus loin.",
+  { text: "A ", style: "regular" },
+  { text: "TALENT", style: "regular" },
+  { text: " FIRST", style: "regular" },
+  { text: "APPROACH TO", style: "regular" },
+  { text: "FULL ", style: "regular" },
+  { text: "SERVICE", style: "regular" },
+  { text: ".", style: "regular" },
+  { text: "WORKING WITH", style: "regular" },
+  { text: "CONTENT CREATORS", style: "regular" },
+  { text: "TO ", style: "regular" },
+  { text: "BRING", style: "regular" },
+  { text: " BRAND", style: "regular " },
+  { text: "STORIES", style: "regular" },
+  { text: " TO LIFE.", style: "regular" },
 ];
 
 export default function DiscoverUs() {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const backgroundRef = useRef<HTMLDivElement>(null);
+  const textContainerRef = useRef<HTMLDivElement>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from(".hero-line", {
-        opacity: 0,
-        y: 40,
-        stagger: 0.2,
-        ease: "power3.out",
+      const section = sectionRef.current;
+      const background = backgroundRef.current;
+      const textContainer = textContainerRef.current;
+      const carousel = carouselRef.current;
+
+      if (!section || !background || !textContainer || !carousel) return;
+
+      ScrollTrigger.create({
+        trigger: section,
+        start: "top top",
+        end: "bottom-=50% top",
+        pin: true,
+        pinSpacing: false,
+      });
+
+      gsap.to(background, {
+        backgroundPosition: "50% 100%",
+        ease: "none",
         scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 80%",
+          trigger: section,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: true,
         },
       });
 
-      gsap.from(".service-item", {
-        opacity: 0,
-        y: 30,
-        stagger: 0.15,
+      gsap.set(".hero-line", { 
+        opacity: 0, 
+        y: 80,
+        rotationX: 15
+      });
+
+      gsap.to(".hero-line", {
+        opacity: 1,
+        y: 0,
+        rotationX: 0,
+        duration: 1.2,
+        stagger: 0.1,
         ease: "power3.out",
+        delay: 0.5, 
         scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 75%",
+          trigger: textContainer,
+          start: "top 70%",
+          end: "bottom 40%",
+          scrub: 1,
         },
       });
+
+      gsap.set(".service-item", {
+        opacity: 0,
+        y: 50,
+        scale: 0.95
+      });
+
+      gsap.to(".service-item", {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: "power2.out",
+        delay: 0.6,
+        scrollTrigger: {
+          trigger: carousel,
+          start: "top center+=100",
+          toggleActions: "play none none reverse",
+          once: false,
+        },
+      });
+
+      gsap.set(".cta-button", {
+        opacity: 0,
+        y: 30,
+        scale: 0.9
+      });
+
+      gsap.to(".cta-button", {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        duration: 0.6,
+        ease: "back.out(1.7)",
+        scrollTrigger: {
+          trigger: ".cta-button",
+          start: "top 90%",
+          toggleActions: "play none none reverse",
+        },
+      });
+
     }, sectionRef);
 
     return () => ctx.revert();
   }, []);
 
+  const getTextStyle = (style: string) => {
+    const baseClasses = "hero-line inline";
+    
+    if (style === "script") {
+      return `${baseClasses} font-script italic`;
+    }
+    if (style === "purple") {
+      return `${baseClasses} text-purple-400`;
+    }
+    if (style === "script purple") {
+      return `${baseClasses} font-script italic text-purple-400`;
+    }
+    return baseClasses;
+  };
+
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-screen overflow-hidden text-white bg-black"
+      className="relative overflow-hidden text-white bg-black"
+      style={{ height: "100vh" }}
     >
-      <div className="absolute inset-0 -z-10">
-        <Image
-          src={bgImage}
-          alt="Hero Background"
-          fill
-          priority
-          className="object-cover object-center"
-        />
+      <div 
+        ref={backgroundRef}
+        className="absolute inset-0 -z-10"
+        style={{
+          backgroundImage: `url(${bgImage.src})`,
+          backgroundSize: 'cover',
+          backgroundPosition: '50% 0%',
+          backgroundAttachment: 'fixed',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
         <div className="absolute inset-0 bg-black/60" />
       </div>
 
-      <div className="relative z-10 container mx-auto px-6 lg:px-12 py-24 grid grid-cols-1 md:grid-cols-2 items-center gap-16">
-        {/* Left Text */}
-        <div className="space-y-3 text-left leading-tight">
-          {textLines.map((line, index) => (
-            <motion.h1
-              key={index}
-              className="hero-line text-3xl md:text-4xl lg:text-5xl font-extrabold text-white"
+      <div className="relative z-10 h-full flex">
+        <div className="w-full max-w-screen-xl mx-25 px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+            <div 
+              ref={textContainerRef}
+              className="space-y-0 text-left "
             >
-              {line}
-            </motion.h1>
-          ))}
-        </div>
+              <h1 className="text-white text-[8vw] md:text-[5.5vw] lg:text-[4.2vw] xl:text-[3.8vw] font-black leading-[0.9] tracking-tight">
+                {textLines.map((item, index) => (
+                  <span
+                    key={index}
+                    className={getTextStyle(item.style)}
+                  >
+                    {item.text}
+                  </span>
+                ))}
+              </h1>
+            </div>
 
-        <div className="space-y-1">
-          <div className="space-y-4">
-            {services.map((service, i) => (
-              <div
-                key={i}
-                className="service-item group border-b border-white/30 pb-2 hover:border-[#ff0000] transition-all duration-300"
+            <div className="flex flex-col justify-center h-full ml-60 mt-12">
+              <div 
+                ref={carouselRef}
+                className="space-y-6"
               >
-                <p className="text-lg font-light group-hover:text-[#ff0000] transition-colors">
-                  {i + 1}. {service}
-                </p>
+                {services.map((service, i) => (
+                  <div
+                    key={i}
+                    className="service-item group pb-6 border-b border-white/20 hover:border-white/40 transition-all duration-500 cursor-pointer transform hover:translate-x-2"
+                  >
+                    <p className="text-xl lg:text-2xl font-light tracking-wide group-hover:text-white text-white/90 transition-colors duration-300 flex items-center">
+                      <span className="text-white/60 mr-4 font-normal text-lg">
+                        {String(i + 1).padStart(2, '0')}.
+                      </span>
+                      {service}
+                    </p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          <div className="pt-6">
-            <button className="flex items-center gap-2 text-white hover:text-[#ff0000] font-medium">
-              <div className="w-6 h-6 rounded-full bg-[#ff0000] flex items-center justify-center">
-                <ArrowRight className="w-4 h-4" />
+              <div className="pt-5">
+                <button className="cta-button flex items-center gap-4 text-white hover:text-red-500 font-medium text-lg transition-all duration-300 hover:gap-6 group">
+                  <div className="w-9 h-9 rounded-full bg-red-500 flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-red-500group-hover:shadow-lg group-hover:shadow-red-500/25">
+                    <ArrowRight className="w-5 h-5 text-white" />
+                  </div>
+                  See Our Services
+                </button>
               </div>
-              See Our Services
-            </button>
+            </div>
           </div>
         </div>
       </div>
+
+      <style jsx>{`
+        .font-script {
+          font-family: 'Dancing Script', cursive, system-ui;
+          font-weight: 600;
+        }
+      `}</style>
     </section>
   );
 }

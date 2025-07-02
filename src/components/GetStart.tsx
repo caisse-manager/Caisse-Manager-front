@@ -34,19 +34,20 @@ export default function GetStart() {
     <motion.div
       className="absolute z-20"
       style={{
-        left: '50%', 
+        left: '50%',
         top: '18%',
-        translateX: '120%',
-        translateY: '70%',
+        translateX: '115%',
+        translateY: '75%',
         width: 180,
         height: 64,
         x: springX,
         y: springY,
+        rotate: 6,
       }}
     >
       <motion.button
         className="w-full h-full bg-red-500 text-white rounded-full font-semibold shadow-2xl text-lg cursor-pointer px-6"
-        whileHover={{ scale: 1.1 }}
+        whileHover={{ scale: 1.1, rotate: 0 }} 
         whileTap={{ scale: 0.95 }}
       >
         GET STARTED
@@ -77,7 +78,7 @@ export default function GetStart() {
         <div className="flex items-center justify-center space-x-4">
           <AnimatedText
             text="Caisse"
-            className="text-6xl md:text-8xl lg:text-9xl font-bold"
+            className="text-6xl md:text-8xl lg:text-9xl font-bold italic"
           />
           <Image
             src="/caisse-manager-logo.png"

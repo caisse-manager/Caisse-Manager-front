@@ -7,7 +7,6 @@ export default function Contact() {
   return (
     <section className="container mx-auto min-h-screen py-8 px-4 sm:py-12 md:py-20">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center max-w-7xl mx-auto">
-        {/* Image Section */}
         <div className="relative order-2 lg:order-1">
           <div className="absolute -inset-2 sm:-inset-4 bg-gradient-to-r from-red-900/20 to-red-600/20 rounded-xl blur-xl"></div>
           <div className="relative flex justify-center lg:justify-start">
@@ -23,7 +22,6 @@ export default function Contact() {
           </div>
         </div>
 
-        {/* Form Section */}
         <div className="order-1 lg:order-2">
           <div className="bg-black/30 dark:bg-white/5 p-4 sm:p-6 lg:p-8 rounded-lg border border-gray-800 dark:border-gray-700 backdrop-blur-sm">
             <div className="mb-6">
