@@ -88,29 +88,80 @@ export default function BrandShowcase() {
       duration: 1,
     })
 
+    logoRefs.current.forEach((el) => {
+      const img = el?.querySelector("img")
+      if (img) {
+        gsap.set(img, { filter: "grayscale(100%) brightness(0.9)" })
+      }
+    })
+
     logoRefs.current.forEach((el, i) => {
       const img = el?.querySelector("img")
       if (!img) return
 
-      const startOffset = i * logoHeight
-      const endOffset = (i + 1) * logoHeight
-
-      gsap.fromTo(
-        img,
-        { filter: "grayscale(100%) brightness(0.9)" },
-        {
-          filter: "grayscale(0%) brightness(1.2) sepia(1) hue-rotate(-50deg) saturate(3)",
-          scrollTrigger: {
-            trigger: section,
-            start: `top+=${startOffset} top`,
-            end: `top+=${endOffset} top`,
-            scrub: true,
-            id: `logo-${i}`,
-          },
-          ease: "power2.out",
-          duration: 0.5,
+      ScrollTrigger.create({
+        trigger: section,
+        start: `top+=${i * logoHeight} top`,
+        end: `top+=${(i + 1) * logoHeight} top`,
+        scrub: true,
+        id: `logo-${i}`,
+        onEnter: () => {
+          gsap.to(img, {
+            filter: "grayscale(0%) brightness(1.2) sepia(1) hue-rotate(-50deg) saturate(3)",
+            duration: 0.3,
+            ease: "power2.out"
+          })
+          
+          logoRefs.current.forEach((otherEl, otherIndex) => {
+            if (otherIndex !== i) {
+              const otherImg = otherEl?.querySelector("img")
+              if (otherImg) {
+                gsap.to(otherImg, {
+                  filter: "grayscale(100%) brightness(0.9)",
+                  duration: 0.2,
+                  ease: "power2.out"
+                })
+              }
+            }
+          })
+        },
+        onLeave: () => {
+          gsap.to(img, {
+            filter: "grayscale(100%) brightness(0.9)",
+            duration: 0.2,
+            ease: "power2.out"
+          })
+        },
+        onEnterBack: () => {
+          gsap.to(img, {
+            filter: "grayscale(0%) brightness(1.2) sepia(1) hue-rotate(-50deg) saturate(3)",
+            duration: 0.3,
+            ease: "power2.out"
+          })
+          
+          // Reset all other logos to gray
+          logoRefs.current.forEach((otherEl, otherIndex) => {
+            if (otherIndex !== i) {
+              const otherImg = otherEl?.querySelector("img")
+              if (otherImg) {
+                gsap.to(otherImg, {
+                  filter: "grayscale(100%) brightness(0.9)",
+                  duration: 0.2,
+                  ease: "power2.out"
+                })
+              }
+            }
+          })
+        },
+        onLeaveBack: () => {
+          // Reset current logo to gray when leaving backwards
+          gsap.to(img, {
+            filter: "grayscale(100%) brightness(0.9)",
+            duration: 0.2,
+            ease: "power2.out"
+          })
         }
-      )
+      })
     })
 
     ScrollTrigger.refresh()
