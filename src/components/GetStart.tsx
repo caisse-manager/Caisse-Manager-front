@@ -36,7 +36,7 @@ export default function GetStart() {
       style={{
         left: '50%', 
         top: '18%',
-        translateX: '120%',
+        translateX: '100%',
         translateY: '70%',
         width: 180,
         height: 64,

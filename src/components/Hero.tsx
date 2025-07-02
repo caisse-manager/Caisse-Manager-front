@@ -23,13 +23,11 @@ export default function Hero() {
 
     if (!hero || !title || !subtitle || !buttons || !image) return;
 
-    // Initial states
     gsap.set([title, subtitle, buttons, image], {
       opacity: 0,
       y: 60
     });
 
-    // Hero entrance animation
     const tl = gsap.timeline({
       delay: 0.5
     });
@@ -59,7 +57,6 @@ export default function Hero() {
       ease: 'power3.out'
     }, '-=1');
 
-    // Parallax effect for hero background
     gsap.to(hero, {
       yPercent: -50,
       ease: 'none',
@@ -71,7 +68,6 @@ export default function Hero() {
       }
     });
 
-    // Floating animation for hero image
     gsap.to(image, {
       y: -20,
       duration: 3,
@@ -91,7 +87,6 @@ export default function Hero() {
       ref={heroRef}
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900"
     >
-      {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
@@ -100,7 +95,6 @@ export default function Hero() {
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Content */}
           <div className="space-y-8">
             <h1 
               ref={titleRef}
@@ -141,7 +135,6 @@ export default function Hero() {
               </Button>
             </div>
 
-            {/* Stats */}
             <div className="grid grid-cols-3 gap-8 pt-8 gsap-fade-up">
               <div className="text-center">
                 <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">500+</div>
@@ -158,13 +151,11 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Image/Visual */}
           <div 
             ref={imageRef}
             className="relative lg:h-[600px] flex items-center justify-center gsap-scale-up"
           >
             <div className="relative w-full max-w-lg">
-              {/* Main device mockup */}
               <div className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 hover-lift">
                 <div className="aspect-[4/3] bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 rounded-2xl flex items-center justify-center">
                   <div className="text-center space-y-4">
@@ -183,7 +174,6 @@ export default function Hero() {
                 </div>
               </div>
 
-              {/* Floating elements */}
               <div className="absolute -top-4 -right-4 w-20 h-20 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg parallax-element">
                 <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -206,7 +196,6 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* Scroll indicator */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 gsap-fade-up">
         <div className="w-6 h-10 border-2 border-gray-400 dark:border-gray-600 rounded-full flex justify-center">
           <div className="w-1 h-3 bg-gray-400 dark:bg-gray-600 rounded-full mt-2 animate-bounce"></div>
