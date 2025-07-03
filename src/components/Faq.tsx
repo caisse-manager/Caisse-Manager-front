@@ -6,7 +6,7 @@ import Image from "next/image"
 import { FaWhatsapp } from 'react-icons/fa';
 
 export default function FAQ() {
-  const [openIndex, setOpenIndex] = useState(null);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const faqs = [
     {
@@ -35,7 +35,7 @@ export default function FAQ() {
     },
   ];
 
-  const toggleFAQ = (index) => {
+  const toggleFAQ = (index:number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
 
@@ -77,7 +77,7 @@ export default function FAQ() {
         <div className="border dark:border-gray-500 border-gray-700 rounded-md p-4" >
             <Image src="/caisse-manager-logo.png"  alt="caisse manager logo " width={100} height={100} />
             <p className="mt-2 text-gray-700 dark:text-gray-300 max-w-xs ">
-            Hi, I'm Shahid, the CEO and Founder of Wavespace. Don't hesitate to reach out to me anytime - I'm here to answer all your questions!
+            Hi, I&apos;m Shahid, the CEO and Founder of Wavespace. Don&apos;t hesitate to reach out to me anytime - I&apos;m here to answer all your questions!
             </p>
             <a
                 href="https://wa.me/..." 
