@@ -40,8 +40,8 @@ const restaurants = [
 ]
 
 export default function ClientsSection() {
-  const sectionRef = useRef<HTMLElement | null>(null)
-  const trackRef = useRef<HTMLDivElement | null>(null)
+  const sectionRef = useRef<HTMLElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
   const [activeCardIndex, setActiveCardIndex] = useState<number | null>(null)
 
   useEffect(() => {
@@ -55,9 +55,14 @@ export default function ClientsSection() {
       }
     })
 
-    const cards = gsap.utils.toArray(".client-card") as HTMLElement[]
-    const ctaCard = document.querySelector(".cta-card") as HTMLElement
-    const redCircle = ctaCard?.querySelector(".cta-circle") as HTMLElement
+    const cards = gsap.utils.toArray<HTMLElement>(".client-card")
+    const ctaCard = section.querySelector<HTMLElement>(".cta-card")
+    const redCircle = ctaCard?.querySelector<HTMLElement>(".cta-circle")
+
+    if (!ctaCard || !redCircle) {
+      console.warn("CTA card or red circle not found")
+      return
+    }
 
     const calculateTrackWidth = () => {
       const trackWidth = track.scrollWidth
@@ -75,7 +80,7 @@ export default function ClientsSection() {
         pin: true,
         anticipatePin: 1,
         invalidateOnRefresh: true,
-        onUpdate: self => {
+        onUpdate: (self) => {
           if (self.progress > 0) {
             section.style.visibility = "visible"
           }
@@ -94,13 +99,19 @@ export default function ClientsSection() {
     )
 
     restaurantCards.forEach((card, index) => {
-      const info = card.querySelector(".client-info") as HTMLElement
-      const video = card.querySelector("video") as HTMLVideoElement
+      const info = card.querySelector<HTMLElement>(".client-info")
+      const video = card.querySelector<HTMLVideoElement>("video")
 
-      if (index !== 0) {
-        gsap.set(card, { scale: 1, y: 0 })
-        gsap.set(info, { opacity: 0, y: 30 })
+      if (!info || !video) {
+        console.warn(`Card ${index}: Missing info or video element`)
+        return
       }
+
+      gsap.set(card, { scale: 1, y: 0 })
+      gsap.set(info, { opacity: 0, y: 30 })
+
+      video.style.filter = "grayscale(1) brightness(0.8)"
+      video.pause()
 
       ScrollTrigger.create({
         trigger: card,
@@ -108,41 +119,102 @@ export default function ClientsSection() {
         start: "left center",
         end: "right center",
         onEnter: () => {
+          console.log(`Card ${index} entered center`)
           setActiveCardIndex(index)
-          gsap.to(card, { scale: 1.05, y: -50, duration: 0.8, ease: "power2.out" })
-          gsap.fromTo(
-            info,
-            { opacity: 0, y: 20 },
-            { opacity: 1, y: 0, duration: 0.6, ease: "power2.out", delay: 0.2 }
-          )
+          
+          gsap.to(card, { 
+            scale: 1.05, 
+            y: -50, 
+            duration: 0.8, 
+            ease: "power2.out" 
+          })
+          
+          if (info) {
+            gsap.fromTo(
+              info,
+              { opacity: 0, y: 30 },
+              { opacity: 1, y: 0, duration: 0.6, ease: "power2.out", delay: 0.2 }
+            )
+          }
+          
           if (video) {
-            video.play().catch(() => {})
+            video.currentTime = 0
+            video.play().catch(console.error)
             video.style.filter = "grayscale(0) brightness(1.1) contrast(1.1)"
           }
         },
         onLeave: () => {
+          console.log(`Card ${index} left center`)
           setActiveCardIndex(null)
-          gsap.to(card, { scale: 1, y: 0, duration: 0.6, ease: "power2.inOut" })
-          gsap.to(info, { opacity: 0, y: 20, duration: 0.4, ease: "power2.inOut" })
+          
+          gsap.to(card, { 
+            scale: 1, 
+            y: 0, 
+            duration: 0.6, 
+            ease: "power2.inOut" 
+          })
+          
+          if (info) {
+            gsap.to(info, { 
+              opacity: 0, 
+              y: 20, 
+              duration: 0.4, 
+              ease: "power2.inOut" 
+            })
+          }
+          
           if (video) {
             video.pause()
             video.style.filter = "grayscale(1) brightness(0.8)"
           }
         },
         onEnterBack: () => {
+          console.log(`Card ${index} entered back`)
           setActiveCardIndex(index)
-          gsap.to(card, { scale: 1.05, y: -50, duration: 0.8, ease: "power2.out" })
-          gsap.to(info, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out", delay: 0.2 })
+          
+          gsap.to(card, { 
+            scale: 1.05, 
+            y: -50, 
+            duration: 0.8, 
+            ease: "power2.out" 
+          })
+          
+          if (info) {
+            gsap.to(info, { 
+              opacity: 1, 
+              y: 0, 
+              duration: 0.6, 
+              ease: "power2.out", 
+              delay: 0.2 
+            })
+          }
+          
           if (video) {
             video.currentTime = 0
-            video.play().catch(() => {})
+            video.play().catch(console.error)
             video.style.filter = "grayscale(0) brightness(1.1) contrast(1.1)"
           }
         },
         onLeaveBack: () => {
+          console.log(`Card ${index} left back`)
           setActiveCardIndex(null)
-          gsap.to(card, { scale: 1, y: 0, duration: 0.6, ease: "power2.inOut" })
-          gsap.to(info, { opacity: 0, y: 20, duration: 0.4, ease: "power2.inOut" })
+          
+          gsap.to(card, { 
+            scale: 1, 
+            y: 0, 
+            duration: 0.6, 
+            ease: "power2.inOut" 
+          })
+          
+          if (info) {
+            gsap.to(info, { 
+              opacity: 0, 
+              y: 20, 
+              duration: 0.4, 
+              ease: "power2.inOut" 
+            })
+          }
+          
           if (video) {
             video.pause()
             video.style.filter = "grayscale(1) brightness(0.8)"
@@ -159,32 +231,76 @@ export default function ClientsSection() {
         trigger: ctaCard,
         containerAnimation: tl,
         start: "left center",
-        end: "right center",       
+        end: "right center",
         onEnter: () => {
-          gsap.to(ctaCard, { scale: 1, y: -50, duration: 0.2, ease: "power2.out" })
-          gsap.to(redCircle, { scale: 20.6, duration: 0.2, ease: "power2.out" })
+          console.log("CTA card entered center")
+          gsap.to(ctaCard, { 
+            scale: 1.05, 
+            y: -50, 
+            duration: 0.8, 
+            ease: "power2.out" 
+          })
+          gsap.to(redCircle, { 
+            scale: 20.6, 
+            duration: 0.8, 
+            ease: "power2.out" 
+          })
         },
         onLeave: () => {
-          gsap.to(ctaCard, { scale: 1, y: 0, duration: 0.1, ease: "power2.inOut" })
-          gsap.to(redCircle, { scale: 1, duration: 0.1, ease: "power2.inOut" })
+          console.log("CTA card left center")
+          gsap.to(ctaCard, { 
+            scale: 1, 
+            y: 0, 
+            duration: 0.6, 
+            ease: "power2.inOut" 
+          })
+          gsap.to(redCircle, { 
+            scale: 1, 
+            duration: 0.6, 
+            ease: "power2.inOut" 
+          })
         },
         onEnterBack: () => {
-          gsap.to(ctaCard, { scale: 1.05, y: 50, duration: 0.2, ease: "power2.out" })
-          gsap.to(redCircle, { scale: 20.1, duration: 0.2, ease: "power2.out" })
+          console.log("CTA card entered back")
+          gsap.to(ctaCard, { 
+            scale: 1.05, 
+            y: -50, 
+            duration: 0.8, 
+            ease: "power2.out" 
+          })
+          gsap.to(redCircle, { 
+            scale: 20.6, 
+            duration: 0.8, 
+            ease: "power2.out" 
+          })
         },
         onLeaveBack: () => {
-          gsap.to(ctaCard, { scale: 1, y: 0, duration: 0.1, ease: "power2.inOut" })
-          gsap.to(redCircle, { scale: 1, duration: 0.1, ease: "power2.inOut" })
+          console.log("CTA card left back")
+          gsap.to(ctaCard, { 
+            scale: 1, 
+            y: 0, 
+            duration: 0.6, 
+            ease: "power2.inOut" 
+          })
+          gsap.to(redCircle, { 
+            scale: 1, 
+            duration: 0.6, 
+            ease: "power2.inOut" 
+          })
         },
       })
     }
 
-    ScrollTrigger.refresh(true)
+    ScrollTrigger.refresh()
 
-    const handleResize = () => ScrollTrigger.refresh(true)
+    const handleResize = () => {
+      ScrollTrigger.refresh()
+    }
     window.addEventListener("resize", handleResize)
 
-    const observer = new ResizeObserver(() => ScrollTrigger.refresh(true))
+    const observer = new ResizeObserver(() => {
+      ScrollTrigger.refresh()
+    })
     if (track) observer.observe(track)
 
     return () => {
@@ -214,31 +330,26 @@ export default function ClientsSection() {
         {restaurants.map((restau, index) => (
           <div
             key={`${restau.nom}-${restau.ville}-${index}`}
-            className="client-card min-w-[400px] h-[850px] px-6 py-8 rounded-3xl shadow-2xl flex flex-col items-center justify-between text-white text-xl font-semibold gap-6"
+            className={`client-card min-w-[400px] h-[850px] px-6 py-8 rounded-3xl shadow-2xl flex flex-col items-center justify-between text-white text-xl font-semibold gap-6 ${activeCardIndex === index ? 'active-card' : ''}`}
           >
             <div className="relative w-[400px] h-[850px] rounded-2xl overflow-hidden">
               <video
-                ref={el => {
-                  if (el) {
-                    el.onloadedmetadata = () => {
-                      const ratio = el.videoWidth / el.videoHeight
-                      el.style.width = "100%"
-                      el.style.height = `calc(100% / ${ratio})`
-                    }
-                  }
-                }}
                 src={restau.video}
                 autoPlay={false}
                 loop
                 playsInline
+                muted
                 className="w-full h-full object-cover transition-all duration-500"
                 style={{
-                  filter:
-                    activeCardIndex === index
-                      ? "grayscale(0) brightness(1.1) contrast(1.1)"
-                      : "grayscale(1) brightness(0.8)",
+                  filter: "grayscale(1) brightness(0.8)"
                 }}
-                onLoadStart={e => {
+                onLoadedMetadata={(e) => {
+                  const video = e.target as HTMLVideoElement
+                  const ratio = video.videoWidth / video.videoHeight
+                  video.style.width = "100%"
+                  video.style.height = `calc(100% / ${ratio})`
+                }}
+                onLoadStart={(e) => {
                   const video = e.target as HTMLVideoElement
                   video.pause()
                 }}
@@ -246,7 +357,7 @@ export default function ClientsSection() {
                 Your browser does not support the video tag.
               </video>
             </div>
-            <div className="client-info text-center">
+            <div className="client-info text-center opacity-0">
               <h3 className="text-3xl font-black text-white tracking-tight leading-tight">
                 {restau.nom}
               </h3>
@@ -258,7 +369,9 @@ export default function ClientsSection() {
               </p>
             </div>
           </div>
-        ))}        <div className="client-card cta-card min-w-[400px] h-[600px] bg-[#111] dark:bg-[#111] rounded-3xl shadow-2xl cursor-pointer group overflow-hidden relative">
+        ))}
+        
+        <div className="client-card cta-card min-w-[400px] h-[600px] bg-[#111] dark:bg-[#111] rounded-3xl shadow-2xl cursor-pointer group overflow-hidden relative">
           <div className="h-full flex items-center justify-center px-8 py-12">
             <div className="relative flex items-center gap-6">
               <div className="relative w-14 h-14 z-0">

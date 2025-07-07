@@ -5,6 +5,7 @@ import PreviousWork from "@/components/PreviousWork"
 import BrandShowcase from "@/components/BrandShowcase"
 import DiscoverUs from "@/components/DiscoverUs"
 import GetStart from "@/components/GetStart"
+import OurValues from "@/components/OurValues"
 import Footer from "@/components/Footer"
 
 export default function Home() {
@@ -16,6 +17,7 @@ export default function Home() {
       <DiscoverUs />
       <BrandShowcase />
       <GetStart />
+      <OurValues />
       <Fonctionalites />
       <Footer />
     </div>

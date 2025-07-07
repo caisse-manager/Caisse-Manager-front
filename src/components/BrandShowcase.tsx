@@ -32,14 +32,13 @@ export default function BrandShowcase() {
   useEffect(() => {
     const section = sectionRef.current
     const list = listRef.current
-    if (!section || !list) return    ScrollTrigger.getAll().forEach(st => {
-      if (st.vars && (st.vars.id === "brand-showcase" || st.vars.id === "brand-showcase-text")) {
-        st.kill()
-      }
+    if (!section || !list) return
+
+    ScrollTrigger.getAll().forEach(st => {
+      if (st.vars?.id?.startsWith("logo-") || st.vars?.id === "brand-showcase" || st.vars?.id === "brand-showcase-text") st.kill()
     })
 
-    gsap.set(section, { opacity: 1, visibility: "visible" })
-    gsap.set(list, { y: 0 })
+    gsap.set([section, list], { opacity: 1, visibility: "visible" })
     textRefs.current.forEach((el) => el && gsap.set(el, { opacity: 1, y: 0 }))
 
     const textTl = gsap.timeline({
@@ -54,14 +53,7 @@ export default function BrandShowcase() {
 
     textRefs.current.forEach((el, i) => {
       if (el) {
-        textTl.fromTo(el, 
-          { opacity: 0, y: 50 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            ease: "power2.out",
-          }, i * 0.1)
+        textTl.fromTo(el, { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, i * 0.1)
       }
     })
 
@@ -72,13 +64,12 @@ export default function BrandShowcase() {
     const mainTl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
-        id: "brand-showcase",
         start: "top top",
         end: `+=${scrollLength}`,
         pin: true,
         scrub: 1,
         anticipatePin: 1,
-        invalidateOnRefresh: true,
+        id: "brand-showcase",
       },
     })
 
@@ -88,16 +79,14 @@ export default function BrandShowcase() {
       duration: 1,
     })
 
-    logoRefs.current.forEach((el) => {
-      const img = el?.querySelector("img")
-      if (img) {
-        gsap.set(img, { filter: "grayscale(100%) brightness(0.9)" })
-      }
-    })
-
     logoRefs.current.forEach((el, i) => {
       const img = el?.querySelector("img")
       if (!img) return
+
+      gsap.set(img, {
+        filter: "grayscale(100%) brightness(0.9)",
+        scale: 1,
+      })
 
       ScrollTrigger.create({
         trigger: section,
@@ -105,87 +94,60 @@ export default function BrandShowcase() {
         end: `top+=${(i + 1) * logoHeight} top`,
         scrub: true,
         id: `logo-${i}`,
-        onEnter: () => {
-          gsap.to(img, {
-            filter: "grayscale(0%) brightness(1.2) sepia(1) hue-rotate(-50deg) saturate(3)",
-            duration: 0.3,
-            ease: "power2.out"
-          })
-          
-          logoRefs.current.forEach((otherEl, otherIndex) => {
-            if (otherIndex !== i) {
-              const otherImg = otherEl?.querySelector("img")
-              if (otherImg) {
-                gsap.to(otherImg, {
-                  filter: "grayscale(100%) brightness(0.9)",
-                  duration: 0.2,
-                  ease: "power2.out"
-                })
-              }
-            }
-          })
-        },
-        onLeave: () => {
-          gsap.to(img, {
-            filter: "grayscale(100%) brightness(0.9)",
-            duration: 0.2,
-            ease: "power2.out"
-          })
-        },
-        onEnterBack: () => {
-          gsap.to(img, {
-            filter: "grayscale(0%) brightness(1.2) sepia(1) hue-rotate(-50deg) saturate(3)",
-            duration: 0.3,
-            ease: "power2.out"
-          })
-          
-          // Reset all other logos to gray
-          logoRefs.current.forEach((otherEl, otherIndex) => {
-            if (otherIndex !== i) {
-              const otherImg = otherEl?.querySelector("img")
-              if (otherImg) {
-                gsap.to(otherImg, {
-                  filter: "grayscale(100%) brightness(0.9)",
-                  duration: 0.2,
-                  ease: "power2.out"
-                })
-              }
-            }
-          })
-        },
-        onLeaveBack: () => {
-          gsap.to(img, {
-            filter: "grayscale(100%) brightness(0.9)",
-            duration: 0.2,
-            ease: "power2.out"
-          })
-        }
+        onEnter: () => activateLogo(i),
+        onEnterBack: () => activateLogo(i),
+        onLeave: () => resetLogo(i),
+        onLeaveBack: () => resetLogo(i),
       })
     })
 
-    ScrollTrigger.refresh()
+    function activateLogo(activeIndex: number) {
+      logoRefs.current.forEach((el, i) => {
+        const img = el?.querySelector("img")
+        if (!img) return
 
-    const handleResize = () => {
-      ScrollTrigger.refresh()
-    }
-
-    window.addEventListener("resize", handleResize)
-
-    return () => {
-      ScrollTrigger.getAll().forEach(st => {
-        if (st.vars && (
-          st.vars.id === "brand-showcase" ||
-          st.vars.id === "brand-showcase-text" ||
-          st.vars.id?.toString().startsWith("logo-")
-        )) {
-          st.kill()
+        if (i === activeIndex) {
+          gsap.to(img, {
+            filter: "grayscale(0%) brightness(1.2) sepia(1) hue-rotate(-50deg) saturate(3)",
+            scale: 1.15,
+            duration: 0.4,
+            ease: "power2.out",
+          })
+        } else {
+          gsap.to(img, {
+            filter: "grayscale(100%) brightness(0.9)",
+            scale: 1,
+            duration: 0.3,
+            ease: "power2.out",
+          })
         }
       })
-      textTl.kill()
+    }
+
+    function resetLogo(i: number) {
+      const img = logoRefs.current[i]?.querySelector("img")
+      if (img) {
+        gsap.to(img, {
+          filter: "grayscale(100%) brightness(0.9)",
+          scale: 1,
+          duration: 0.3,
+          ease: "power2.out",
+        })
+      }
+    }
+
+    const handleResize = () => ScrollTrigger.refresh()
+    
+    window.addEventListener("resize", handleResize)
+    
+    return () => {
+      ScrollTrigger.getAll().forEach(st => st.kill())
       mainTl.kill()
+      textTl.kill()
       window.removeEventListener("resize", handleResize)
     }
   }, [])
+
   return (
     <section
       ref={sectionRef}
@@ -198,23 +160,21 @@ export default function BrandShowcase() {
           {textLines.map((line, i) => (
             <div
               key={i}
-              ref={(el) => {
-                textRefs.current[i] = el
-              }}
+              ref={(el) => { textRefs.current[i] = el; }}
               className="text-white text-[8vw] md:text-[5.5vw] lg:text-[4.2vw] xl:text-[3.8vw] font-black leading-[0.9] tracking-tight"
             >
               {line}
             </div>
           ))}
         </div>
-
+        
         <div className="w-1/2 h-full overflow-hidden flex items-center justify-center">
           <div ref={listRef} className="flex flex-col gap-40 py-10">
             <div className="shrink-0" style={{ width: "180vw" }}></div>
             {brands.map((src, index) => (
-              <div className="shrink-0 h-32" key={index} >
+              <div className="shrink-0 h-32" key={index}>
                 <div
-                  ref={el => { logoRefs.current[index] = el }}
+                  ref={(el) => { logoRefs.current[index] = el; }}
                   className="w-full flex justify-center py-6 mt-180 mb-220"
                 >
                   <Image
@@ -222,7 +182,7 @@ export default function BrandShowcase() {
                     alt={`Brand ${index}`}
                     width={280}
                     height={180}
-                    className="transition-all duration-500 grayscale filter brightness-90 object-contain "
+                    className="transition-all duration-500 object-contain"
                   />
                 </div>
               </div>

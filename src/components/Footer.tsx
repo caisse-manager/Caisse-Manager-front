@@ -91,7 +91,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-700 mt-12 pt-6 text-center text-sm text-gray-400">
-          © 2018 - {currentYear} Caisse Manager. Tous droits réservés.
+          © 202 - {currentYear} Caisse Manager. Tous droits réservés.
         </div>
       </div>
 
