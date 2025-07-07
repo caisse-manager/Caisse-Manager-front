@@ -139,7 +139,6 @@ export default function BrandShowcase() {
     const handleResize = () => ScrollTrigger.refresh()
     
     window.addEventListener("resize", handleResize)
-    
     return () => {
       ScrollTrigger.getAll().forEach(st => st.kill())
       mainTl.kill()
@@ -167,7 +166,6 @@ export default function BrandShowcase() {
             </div>
           ))}
         </div>
-        
         <div className="w-1/2 h-full overflow-hidden flex items-center justify-center">
           <div ref={listRef} className="flex flex-col gap-40 py-10">
             <div className="shrink-0" style={{ width: "180vw" }}></div>
