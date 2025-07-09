@@ -15,7 +15,13 @@ export default function Preloader({ onFinish }: PreloaderProps) {
   const redEffectRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!redEffectRef.current || !containerRef.current || !logoEntrepriseRef.current || !companyNameRef.current) return
+    if (
+      !redEffectRef.current ||
+      !containerRef.current ||
+      !logoEntrepriseRef.current ||
+      !companyNameRef.current
+    )
+      return
 
     const centerX = (window.innerWidth / 2 - 125) * -1
     const centerY = window.innerHeight / 2 - 125
@@ -30,7 +36,7 @@ export default function Preloader({ onFinish }: PreloaderProps) {
       borderRadius: "50%",
       background:
         "radial-gradient(circle at center, rgba(255, 40, 40, 0.60) 0%, rgba(255, 50, 40, 0.25) 30%, rgba(255, 40, 20, 0.15) 60%, transparent 100%)",
-      opacity: 0,            // Start invisible for fade-in
+      opacity: 0, // Start invisible for fade-in
       filter: "blur(50px)",
       transformOrigin: "center center",
       scale: 1.4,
@@ -64,11 +70,7 @@ export default function Preloader({ onFinish }: PreloaderProps) {
     )
 
     // 4. Fade-in du light seul (0.5s)
-    tl.to(
-      redEffectRef.current,
-      { opacity: 0.5, duration: 0.5, ease: "power2.out" },
-      "+=0.2"
-    )
+    tl.to(redEffectRef.current, { opacity: 0.5, duration: 0.5, ease: "power2.out" }, "+=0.2")
 
     // 5. Apparition simultanée du flou texte et fade-in final du light (1.5s)
     tl.to(
@@ -76,11 +78,7 @@ export default function Preloader({ onFinish }: PreloaderProps) {
       { filter: "blur(0.8px)", duration: 1.5, ease: "power3.inOut" },
       "<"
     )
-    tl.to(
-      redEffectRef.current,
-      { opacity: 1, duration: 1.5, ease: "power2.out" },
-      "<"
-    )
+    tl.to(redEffectRef.current, { opacity: 1, duration: 1.5, ease: "power2.out" }, "<")
 
     // 6. Suppression du flou du texte
     tl.to(companyNameRef.current, {
