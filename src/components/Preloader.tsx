@@ -15,12 +15,18 @@ export default function Preloader({ onFinish }: PreloaderProps) {
   const redEffectRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!redEffectRef.current || !containerRef.current || !logoEntrepriseRef.current || !companyNameRef.current) return
+    if (
+      !redEffectRef.current ||
+      !containerRef.current ||
+      !logoEntrepriseRef.current ||
+      !companyNameRef.current
+    )
+      return
 
     const centerX = (window.innerWidth / 2 - 125) * -1
     const centerY = window.innerHeight / 2 - 125
 
-    // Initialisation du light rouge (position, taille, style)
+    // Initialisation de l'effet lumineux rouge
     gsap.set(redEffectRef.current, {
       position: "fixed",
       top: 10,
@@ -30,7 +36,7 @@ export default function Preloader({ onFinish }: PreloaderProps) {
       borderRadius: "50%",
       background:
         "radial-gradient(circle at center, rgba(255, 40, 40, 0.60) 0%, rgba(255, 50, 40, 0.25) 30%, rgba(255, 40, 20, 0.15) 60%, transparent 100%)",
-      opacity: 0,            // Start invisible for fade-in
+      opacity: 0,
       filter: "blur(50px)",
       transformOrigin: "center center",
       scale: 1.4,
@@ -55,7 +61,7 @@ export default function Preloader({ onFinish }: PreloaderProps) {
       "+=0"
     )
 
-    // 3. Apparition du nom
+    // 3. Apparition du nom de l’entreprise
     tl.fromTo(
       companyNameRef.current,
       { opacity: 0, x: -30 },
@@ -63,17 +69,17 @@ export default function Preloader({ onFinish }: PreloaderProps) {
       "<"
     )
 
-    // 4. Fade-in du light seul (0.5s)
+    // 4. Fade-in initial de la lumière
     tl.to(
       redEffectRef.current,
       { opacity: 0.5, duration: 0.5, ease: "power2.out" },
       "+=0.2"
     )
 
-    // 5. Apparition simultanée du flou texte et fade-in final du light (1.5s)
+    // 5. Apparition floue du nom + intensification lumière
     tl.to(
       companyNameRef.current,
-      { filter: "blur(0.8px)", duration: 1.5, ease: "power3.inOut" },
+      { filter: "blur(0.8px)", duration: 1, ease: "power3.inOut" },
       "<"
     )
     tl.to(
@@ -82,26 +88,30 @@ export default function Preloader({ onFinish }: PreloaderProps) {
       "<"
     )
 
-    // 6. Suppression du flou du texte
-    tl.to(companyNameRef.current, {
-      filter: "blur(0px)",
-      duration: 0.8,
-      ease: "power3.inOut",
-    })
+    // 6. Suppression progressive du flou (overlap)
+    tl.to(
+      companyNameRef.current,
+      { filter: "blur(0px)", duration: 0.5, ease: "power3.inOut" },
+      "<+0.5"
+    )
 
-    // 7. Animation fluide du light avec keyframes
-    tl.to(redEffectRef.current, {
-      duration: 8,
-      ease: "power2.inOut",
-      keyframes: [
-        { x: "-70vw", duration: 1.2 },
-        { x: "-40vw", y: "60vh", duration: 2.5 },
-        { x: 0, duration: 2.5 },
-        { x: centerX, y: centerY, duration: 2 },
-      ],
-    })
+    // 7. Animation fluide du light (enchainée sans pause)
+    tl.to(
+      redEffectRef.current,
+      {
+        duration: 8,
+        ease: "power2.inOut",
+        keyframes: [
+          { x: "-70vw", duration: 1.2 },
+          { x: "-40vw", y: "60vh", duration: 2.5 },
+          { x: 0, duration: 2.5 },
+          { x: centerX, y: centerY, duration: 2 },
+        ],
+      },
+      "<+0.2"
+    )
 
-    // 8. Transformation en rideau rouge plein écran
+    // 8. Expansion en rideau rouge plein écran
     tl.to(
       redEffectRef.current,
       {
@@ -127,6 +137,7 @@ export default function Preloader({ onFinish }: PreloaderProps) {
       },
       "+=0"
     )
+
     tl.to(
       redEffectRef.current,
       {
