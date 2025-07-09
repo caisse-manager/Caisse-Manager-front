@@ -10,7 +10,7 @@ import Footer from "@/components/Footer"
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white max-x-screen">
+    <div className="min-h-screen bg-black text-white max-x-screen">
       <NavBar />      
       <Contact />
       <PreviousWork />

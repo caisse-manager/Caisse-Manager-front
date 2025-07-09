@@ -8,181 +8,210 @@ import Image from "next/image"
 gsap.registerPlugin(ScrollTrigger)
 
 const brands = [
-  "/brands/Crusty.png",
-  "/brands/Panda.png",
-  "/brands/CTRChicken.png",
-  "/brands/Lma3loma.png",
-  "/brands/PaniniGrill.png",
-  "/brands/ChickenAmira.png",
-  "/brands/TheBurger.png",
-]
-
-const textLines = [
-  "Ils ont boosté",
-  "leur restaurant",
-  "avec Caisse Manager",
+  { src: "/brands/ChickenAmira.png", name: "Chicken Amira" },
+  { src: "/brands/Crusty.png", name: "Crusty" },
+  { src: "/brands/CTRChicken.png", name: "CTR Chicken" },
+  { src: "/brands/Lma3loma.png", name: "Lma3loma" },
+  { src: "/brands/Panda.png", name: "Panda" },
+  { src: "/brands/PaniniGrill.png", name: "Panini Grill" },
+  { src: "/brands/Potchi.png", name: "Potchi" },
+  { src: "/brands/PRIMUS.png", name: "Primus" },
+  { src: "/brands/ROOM21.png", name: "Room 21" },
+  { src: "/brands/TheBurger.png", name: "The Burger" },
 ]
 
 export default function BrandShowcase() {
-  const sectionRef = useRef<HTMLElement | null>(null)
-  const textRefs = useRef<(HTMLDivElement | null)[]>([])
-  const listRef = useRef<HTMLDivElement | null>(null)
+  const sectionRef = useRef<HTMLElement>(null)
+  const textRef = useRef<HTMLDivElement>(null)
+  const logosContainerRef = useRef<HTMLDivElement>(null)
   const logoRefs = useRef<(HTMLDivElement | null)[]>([])
 
   useEffect(() => {
-    const section = sectionRef.current
-    const list = listRef.current
-    if (!section || !list) return
+    if (!sectionRef.current || !logosContainerRef.current) return
 
-    ScrollTrigger.getAll().forEach(st => {
-      if (st.vars?.id?.startsWith("logo-") || st.vars?.id === "brand-showcase" || st.vars?.id === "brand-showcase-text") st.kill()
-    })
+    const ctx = gsap.context(() => {
+      gsap.fromTo(textRef.current,
+        { opacity: 0, y: 30 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power2.out"
+        }
+      )
 
-    gsap.set([section, list], { opacity: 1, visibility: "visible" })
-    textRefs.current.forEach((el) => el && gsap.set(el, { opacity: 1, y: 0 }))
+      const textElements = textRef.current?.querySelectorAll('h2, p, .stats-item, button')
+      if (textElements) {
+        gsap.set(textElements, { opacity: 0.8 })
 
-    const textTl = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        start: "top 80%",
-        end: "top 60%",
-        scrub: 1,
-        id: "brand-showcase-text"
+        ScrollTrigger.create({
+          trigger: logosContainerRef.current,
+          start: "top center",
+          end: "bottom center",
+          scrub: 1,
+          onUpdate: (self) => {
+            const progress = self.progress
+            gsap.to(textElements, {
+              opacity: 0.8 + (progress * 0.2),
+              y: progress * -15,
+              scale: 1 + (progress * 0.02),
+              duration: 0.3,
+              ease: "power1.out"
+            })
+          }
+        })
+
+        ScrollTrigger.create({
+          trigger: logosContainerRef.current,
+          start: "top top",
+          end: "bottom bottom",
+          pin: textRef.current,
+          pinSpacing: false
+        })
       }
-    })
 
-    textRefs.current.forEach((el, i) => {
-      if (el) {
-        textTl.fromTo(el, { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, i * 0.1)
-      }
-    })
+      logoRefs.current.forEach((logo) => {
+        if (!logo) return
 
-    const logoHeight = 145
-    const extraScroll = 500
-    const scrollLength = brands.length * logoHeight + extraScroll
+        gsap.set(logo, {
+          scale: 1,
+          opacity: 1
+        })
 
-    const mainTl = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        start: "top top",
-        end: `+=${scrollLength}`,
-        pin: true,
-        scrub: 1,
-        anticipatePin: 1,
-        id: "brand-showcase",
-      },
-    })
-
-    mainTl.to(list, {
-      y: -(brands.length - 1) * logoHeight,
-      ease: "none",
-      duration: 1,
-    })
-
-    logoRefs.current.forEach((el, i) => {
-      const img = el?.querySelector("img")
-      if (!img) return
-
-      gsap.set(img, {
-        filter: "grayscale(100%) brightness(0.9)",
-        scale: 1,
-      })
-
-      ScrollTrigger.create({
-        trigger: section,
-        start: `top+=${i * logoHeight} top`,
-        end: `top+=${(i + 1) * logoHeight} top`,
-        scrub: true,
-        id: `logo-${i}`,
-        onEnter: () => activateLogo(i),
-        onEnterBack: () => activateLogo(i),
-        onLeave: () => resetLogo(i),
-        onLeaveBack: () => resetLogo(i),
-      })
-    })
-
-    function activateLogo(activeIndex: number) {
-      logoRefs.current.forEach((el, i) => {
-        const img = el?.querySelector("img")
-        if (!img) return
-
-        if (i === activeIndex) {
-          gsap.to(img, {
-            filter: "grayscale(0%) brightness(1.2) sepia(1) hue-rotate(-50deg) saturate(3)",
-            scale: 1.15,
-            duration: 0.4,
-            ease: "power2.out",
-          })
-        } else {
-          gsap.to(img, {
-            filter: "grayscale(100%) brightness(0.9)",
-            scale: 1,
-            duration: 0.3,
-            ease: "power2.out",
+        const img = logo.querySelector('img')
+        if (img) {
+          gsap.set(img, {
+            filter: 'grayscale(100%)',
+            scale: 1
           })
         }
       })
-    }
 
-    function resetLogo(i: number) {
-      const img = logoRefs.current[i]?.querySelector("img")
-      if (img) {
-        gsap.to(img, {
-          filter: "grayscale(100%) brightness(0.9)",
-          scale: 1,
-          duration: 0.3,
-          ease: "power2.out",
+      logoRefs.current.forEach((logo) => {
+        if (!logo) return
+
+        ScrollTrigger.create({
+          trigger: logo,
+          start: "top 80%",
+          end: "bottom 20%",
+          onEnter: () => {
+            const img = logo.querySelector('img')
+            if (img) {
+              gsap.to(img, {
+                scale: 1.2,
+                filter: 'grayscale(0%)',
+                duration: 0.6,
+                ease: "power2.out"
+              })
+            }
+          },
+          onLeave: () => {
+            const img = logo.querySelector('img')
+            if (img) {
+              gsap.to(img, {
+                scale: 1,
+                filter: 'grayscale(100%)',
+                duration: 0.4,
+                ease: "power2.out"
+              })
+            }
+          },
+          onEnterBack: () => {
+            const img = logo.querySelector('img')
+            if (img) {
+              gsap.to(img, {
+                scale: 1.2,
+                filter: 'grayscale(0%)',
+                duration: 0.6,
+                ease: "power2.out"
+              })
+            }
+          },
+          onLeaveBack: () => {
+            const img = logo.querySelector('img')
+            if (img) {
+              gsap.to(img, {
+                scale: 1,
+                filter: 'grayscale(100%)',
+                duration: 0.4,
+                ease: "power2.out"
+              })
+            }
+          }
         })
-      }
-    }
+      })
 
-    const handleResize = () => ScrollTrigger.refresh()
-    
-    window.addEventListener("resize", handleResize)
-    return () => {
-      ScrollTrigger.getAll().forEach(st => st.kill())
-      mainTl.kill()
-      textTl.kill()
-      window.removeEventListener("resize", handleResize)
-    }
+      gsap.fromTo(logoRefs.current.filter(Boolean),
+        { y: 50, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          stagger: 0.1,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: logosContainerRef.current,
+            start: "top 85%",
+            once: true
+          }
+        }
+      )
+
+    }, sectionRef)
+
+    return () => ctx.revert()
   }, [])
 
   return (
     <section
       ref={sectionRef}
-      id="brand-showcase"
-      className="w-full flex items-center justify-center bg-black dark:bg-black text-white overflow-hidden relative"
-      style={{ height: "120vh" }}
+      className="bg-black relative transition-colors duration-500 brandshow-section brandshow-synchronized"
     >
-      <div className="flex w-full h-full px-16 md:px-20 gap-8 items-center justify-center">
-        <div className="w-1/2 flex flex-col justify-center items-start space-y-4">
-          <div
-            ref={(el) => { textRefs.current[0] = el; }}
-            className="text-white text-[8vw] md:text-[5.5vw] lg:text-[4.2vw] xl:text-[3.8vw] font-black leading-[0.9] tracking-tight"
-          >
-            {textLines.join(" ")}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-black dark:via-gray-900/50 dark:to-black transition-colors duration-500"></div>
+
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-blue-500 dark:bg-blue-500 rounded-full animate-pulse"></div>
+        <div className="absolute top-3/4 right-1/3 w-1 h-1 bg-purple-500 dark:bg-purple-500 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-1/4 left-1/3 w-1.5 h-1.5 bg-cyan-500 dark:bg-cyan-500 rounded-full animate-pulse" style={{ animationDelay: '2s' }}></div>
+      </div>
+
+      <div className="relative z-10 max-w-full">
+        <div className="flex flex-col lg:flex-row max-w-7xl mx-auto px-4">
+
+          <div className="lg:w-1/2 lg:fixed lg:top-20 lg:left-0 lg:h-screen flex items-center justify-center pl-8 lg:pl-16 xl:pl-24 brandshow-text-column lg:z-20">
+            <div ref={textRef} className="space-y-8 text-left py-16 lg:py-0 px-6 lg:px-8 max-w-lg">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-gray-900 dark:text-white leading-[0.9] tracking-tight text-left">
+                Ils ont boosté
+                <br />
+                leur restaurant
+                <br />
+                avec Caisse Manager
+              </h2>
+            </div>
           </div>
-        </div>
-        <div className="w-1/2 h-full overflow-hidden flex items-center justify-center">
-          <div ref={listRef} className="flex flex-col gap-40 py-10">
-            <div className="shrink-0" style={{ width: "180vw" }}></div>
-            {brands.map((src, index) => (
-              <div className="shrink-0 h-32" key={index}>
-                <div
-                  ref={(el) => { logoRefs.current[index] = el; }}
-                  className="w-full flex justify-center py-6 mt-180 mb-220"
-                >
-                  <Image
-                    src={src}
-                    alt={`Brand ${index}`}
-                    width={280}
-                    height={180}
-                    className="transition-all duration-500 object-contain"
-                  />
+
+          <div ref={logosContainerRef} className="space-y-16 lg:space-y-32 flex flex-col items-center py-16 lg:py-24 px-6 lg:px-12 lg:w-1/2 lg:ml-auto lg:mr-0 min-h-[400vh]">
+            {brands.map((brand, index) => (
+              <div
+                key={brand.name}
+                ref={(el) => { logoRefs.current[index] = el }}
+                className="flex justify-center w-full"
+              >
+                <div className="relative group cursor-pointer">
+                  <div className="relative w-64 h-32 sm:w-72 sm:h-40 md:w-80 md:h-44 lg:w-84 lg:h-48 xl:w-96 xl:h-52 flex items-center justify-center max-w-full">
+                    <Image
+                      src={brand.src}
+                      alt={brand.name}
+                      fill
+                      className="object-contain transition-transform duration-300"
+                      sizes="(max-width: 640px) 256px, (max-width: 768px) 288px, (max-width: 1024px) 320px, 384px"
+                    />
+                  </div>
                 </div>
               </div>
             ))}
-            <div className="shrink-0 h-32"></div>
+
+            <div className="h-32"></div>
           </div>
         </div>
       </div>

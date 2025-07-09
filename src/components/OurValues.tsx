@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -12,6 +12,7 @@ export default function ValuesSection(): React.ReactNode {
   const textLinesRef = useRef<Array<HTMLParagraphElement | null>>([]);
   const imagesRef = useRef<Array<HTMLImageElement | null>>([]);
   const imageContainersRef = useRef<Array<HTMLDivElement | null>>([]);
+  const [isMobile, setIsMobile] = useState(false);
 
   const values = [
     {
@@ -35,11 +36,24 @@ export default function ValuesSection(): React.ReactNode {
   ];
 
   useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768); 
+    };
+
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
+  useEffect(() => {
+    // Seulement animer sur desktop
+    if (isMobile) return;
+
     const ctx = gsap.context(() => {
       const section = sectionRef.current;
       if (!section) return;
 
-      // Initial state: first element active, others inactive
       values.forEach((_, i) => {
         const textEl = textLinesRef.current[i];
         const imageEl = imageContainersRef.current[i];
@@ -53,8 +67,8 @@ export default function ValuesSection(): React.ReactNode {
         
         if (imageEl) {
           gsap.set(imageEl, { 
-            filter: i === 0 ? "grayscale(0%) brightness(1.2)" : "grayscale(100%)",
-            scale: i === 0 ? 1.05 : 1
+            filter: i === 0 ? "grayscale(0%) brightness(1.1)" : "grayscale(100%)",
+            scale: i === 0 ? 1.02 : 1
           });
         }
       });
@@ -73,18 +87,15 @@ export default function ValuesSection(): React.ReactNode {
         onUpdate: (self) => {
           const progress = self.progress;
           
-          // Calculate current active index
           let currentIndex = Math.floor(progress / step);
           if (currentIndex >= total) currentIndex = total - 1;
 
-          // Update all elements
           values.forEach((_, i) => {
             const textEl = textLinesRef.current[i];
             const imageEl = imageContainersRef.current[i];
             
             if (textEl) {
               if (i === currentIndex) {
-                // Active text: white and bold
                 gsap.to(textEl, { 
                   color: "#FFFFFF", 
                   fontWeight: 700, 
@@ -92,7 +103,6 @@ export default function ValuesSection(): React.ReactNode {
                   ease: "power2.out" 
                 });
               } else {
-                // Inactive text: gray and normal
                 gsap.to(textEl, { 
                   color: "#9CA3AF", 
                   fontWeight: 400, 
@@ -104,17 +114,15 @@ export default function ValuesSection(): React.ReactNode {
             
             if (imageEl) {
               if (i === currentIndex) {
-                // Active image: color and zoomed
                 gsap.to(imageEl, { 
-                  filter: "grayscale(0%) brightness(1.2) sepia(0.3) hue-rotate(-10deg) saturate(1.5)",
-                  scale: 1.05, 
+                  filter: "grayscale(0%) brightness(1.1) contrast(1.1) saturate(1.2)",
+                  scale: 1.02, 
                   duration: 0.5, 
                   ease: "power2.out" 
                 });
               } else {
-                // Inactive image: grayscale and normal scale
                 gsap.to(imageEl, { 
-                  filter: "grayscale(100%)",
+                  filter: "grayscale(100%) brightness(0.8)",
                   scale: 1, 
                   duration: 0.5, 
                   ease: "power2.out" 
@@ -135,7 +143,52 @@ export default function ValuesSection(): React.ReactNode {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [isMobile]);
+
+  if (isMobile) {
+    return (
+      <section className="bg-black py-8 px-4 mt-14">
+        <div className="max-w-4xl mx-auto">
+          {/* Titre */}
+          <h2 className="text-3xl font-bold text-white leading-tight mb-8">
+            Designing impactful solutions.
+          </h2>
+
+          {/* Paragraphe d'intro */}
+          <div className="mb-12">
+            <h3 className="text-xl font-semibold text-white mb-6">Our Values</h3>
+            <div className="space-y-6">
+              {values.map((value) => (
+                <p
+                  key={value.id}
+                  className="text-gray-300 text-base leading-relaxed"
+                >
+                  {value.text}
+                </p>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-8">
+            {values.map((value, index) => (
+              <div
+                key={value.id}
+                className="w-full h-64 relative rounded-xl overflow-hidden"
+              >
+                <Image
+                  src={value.image}
+                  alt={value.alt}
+                  fill
+                  className="object-cover"
+                  sizes="100vw"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section 
@@ -166,53 +219,61 @@ export default function ValuesSection(): React.ReactNode {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-15 mt-15">
-          <div className="lg:col-span-2">
-            <div 
-              ref={(el) => { imageContainersRef.current[0] = el; }}
-              className="relative h-[50vh] md:h-[55vh] lg:h-[60vh] rounded-lg overflow-hidden shadow-2xl transition-all duration-700"
-            >
-              <Image
-                ref={(el) => { imagesRef.current[0] = el; }}
-                src={values[0].image}
-                alt={values[0].alt}
-                fill
-                className="object-cover"
-                sizes="(max-width: 968px) 100vw, (max-width: 1024px) 50vw, 66vw"
-                priority
-              />
-            </div>
+        <div className="relative w-full h-[60vh] mt-8">
+          <div 
+            ref={(el) => { imageContainersRef.current[0] = el; }}
+            className="absolute left-0 top-0 w-[65%] h-full overflow-hidden"
+            style={{
+              clipPath: "polygon(0% 0%, 99% 0%, 82% 100%, 0% 100%)",
+              borderRadius: "20px"
+            }}
+          >
+            <Image
+              ref={(el) => { imagesRef.current[0] = el; }}
+              src={values[0].image}
+              alt={values[0].alt}
+              fill
+              className="object-cover transition-all duration-700"
+              sizes="55vw"
+              priority
+            />
           </div>
 
-          <div className="space-y-6">
-            <div 
-              ref={(el) => { imageContainersRef.current[1] = el; }}
-              className="relative h-[68vh] md:h-[26vh] lg:h-[28vh] rounded-lg overflow-hidden shadow-2xl transition-all duration-700" 
-            >
-              <Image
-                ref={(el) => { imagesRef.current[1] = el; }}
-                src={values[1].image}
-                alt={values[1].alt}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1068px) 120vw, (max-width: 1200px) 50vw, 33vw"
-              />
-            </div>
-            <div 
-              ref={(el) => { imageContainersRef.current[2] = el; }}
-              className="relative h-[68vh] md:h-[26vh] lg:h-[28vh] rounded-lg overflow-hidden shadow-2xl transition-all duration-700" 
-            >
-              <Image
-                ref={(el) => { imagesRef.current[2] = el; }}
-                src={values[2].image}
-                alt={values[2].alt}
-                fill
-                className="object-cover"
-                sizes="(max-width: 968px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              />
-            </div>
+          <div 
+            ref={(el) => { imageContainersRef.current[1] = el; }}
+            className="absolute right-0 top-0 w-[42%] h-[46%] overflow-hidden"
+            style={{
+              clipPath: "polygon(20% 0%, 100% 0%, 100% 100%, 8% 100%)",
+              borderRadius: "20px"
+            }}
+          >
+            <Image
+              ref={(el) => { imagesRef.current[1] = el; }}
+              src={values[1].image}
+              alt={values[1].alt}
+              fill
+              className="object-cover transition-all duration-700"
+              sizes="42vw"
+            />
           </div>
-          <div className="shrink-0" style={{ width: "120vw" }}></div>  
+
+          <div 
+            ref={(el) => { imageContainersRef.current[2] = el; }}
+            className="absolute right-0 bottom-0 w-[51%] h-[50%] overflow-hidden"
+            style={{
+              clipPath: "polygon(24% 0%, 100% 0%, 100% 100%, 13% 100%)",
+              borderRadius: "20px"
+            }}
+          >
+            <Image
+              ref={(el) => { imagesRef.current[2] = el; }}
+              src={values[2].image}
+              alt={values[2].alt}
+              fill
+              className="object-cover transition-all duration-700"
+              sizes="42vw"
+            />
+          </div>
         </div>
       </div>
     </section>

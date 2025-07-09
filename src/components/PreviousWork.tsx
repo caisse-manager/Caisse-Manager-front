@@ -43,11 +43,16 @@ export default function ClientsSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
   const [activeCardIndex, setActiveCardIndex] = useState<number | null>(null)
+  const [ctaActive, setCtaActive] = useState(false);
 
   useEffect(() => {
     const section = sectionRef.current
     const track = trackRef.current
     if (!section || !track) return
+
+    // S'assurer que le scroll horizontal est à zéro au chargement
+    track.scrollLeft = 0;
+    setActiveCardIndex(null);
 
     ScrollTrigger.getAll().forEach(st => {
       if (st.vars.id === "clients-section-tl") {
@@ -67,7 +72,8 @@ export default function ClientsSection() {
     const calculateTrackWidth = () => {
       const trackWidth = track.scrollWidth
       const viewportWidth = window.innerWidth
-      return trackWidth - viewportWidth + 200
+      // Ajout d'une marge pour permettre de centrer complètement la carte CTA
+      return trackWidth - viewportWidth + (viewportWidth / 2) + 200
     }
 
     const tl = gsap.timeline({
@@ -83,6 +89,10 @@ export default function ClientsSection() {
         onUpdate: (self) => {
           if (self.progress > 0) {
             section.style.visibility = "visible"
+          }
+          // Vérifie si aucune carte n'est active (centrée)
+          if (!cards.some((card, idx) => activeCardIndex === idx)) {
+            setActiveCardIndex(null);
           }
         },
         markers: false,
@@ -108,7 +118,7 @@ export default function ClientsSection() {
       }
 
       gsap.set(card, { scale: 1, y: 0 })
-      gsap.set(info, { opacity: 0, y: 30 })
+      gsap.set(info, { opacity: 0, y: 0 }) // y: 0 pour éviter le décalage
 
       video.style.filter = "grayscale(1) brightness(0.8)"
       video.pause()
@@ -119,113 +129,46 @@ export default function ClientsSection() {
         start: "left center",
         end: "right center",
         onEnter: () => {
-          console.log(`Card ${index} entered center`)
           setActiveCardIndex(index)
-          
-          gsap.to(card, { 
-            scale: 1.05, 
-            y: -50, 
-            duration: 0.8, 
-            ease: "power2.out" 
-          })
-          
-          if (info) {
-            gsap.fromTo(
-              info,
-              { opacity: 0, y: 30 },
-              { opacity: 1, y: 0, duration: 0.6, ease: "power2.out", delay: 0.2 }
-            )
-          }
-          
-          if (video) {
-            video.currentTime = 0
-            video.play().catch(console.error)
-            video.style.filter = "grayscale(0) brightness(1.1) contrast(1.1)"
-          }
+          gsap.to(card, { scale: 1.05, y: -50, duration: 0.8, ease: "power2.out" })
+          gsap.to(info, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" })
+          video.currentTime = 0
+          video.play().catch(console.error)
+          video.style.filter = "grayscale(0) brightness(1.1) contrast(1.1)"
         },
         onLeave: () => {
-          console.log(`Card ${index} left center`)
           setActiveCardIndex(null)
-          
-          gsap.to(card, { 
-            scale: 1, 
-            y: 0, 
-            duration: 0.6, 
-            ease: "power2.inOut" 
-          })
-          
-          if (info) {
-            gsap.to(info, { 
-              opacity: 0, 
-              y: 20, 
-              duration: 0.4, 
-              ease: "power2.inOut" 
-            })
-          }
-          
-          if (video) {
-            video.pause()
-            video.style.filter = "grayscale(1) brightness(0.8)"
-          }
+          gsap.to(card, { scale: 1, y: 0, duration: 0.6, ease: "power2.inOut" })
+          gsap.to(info, { opacity: 0, y: 0, duration: 0.3, ease: "power2.inOut" })
+          video.pause()
+          video.style.filter = "grayscale(1) brightness(0.8)"
         },
         onEnterBack: () => {
-          console.log(`Card ${index} entered back`)
           setActiveCardIndex(index)
-          
-          gsap.to(card, { 
-            scale: 1.05, 
-            y: -50, 
-            duration: 0.8, 
-            ease: "power2.out" 
-          })
-          
-          if (info) {
-            gsap.to(info, { 
-              opacity: 1, 
-              y: 0, 
-              duration: 0.6, 
-              ease: "power2.out", 
-              delay: 0.2 
-            })
-          }
-          
-          if (video) {
-            video.currentTime = 0
-            video.play().catch(console.error)
-            video.style.filter = "grayscale(0) brightness(1.1) contrast(1.1)"
-          }
+          gsap.to(card, { scale: 1.05, y: -50, duration: 0.8, ease: "power2.out" })
+          gsap.to(info, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" })
+          video.currentTime = 0
+          video.play().catch(console.error)
+          video.style.filter = "grayscale(0) brightness(1.1) contrast(1.1)"
         },
         onLeaveBack: () => {
-          console.log(`Card ${index} left back`)
           setActiveCardIndex(null)
-          
-          gsap.to(card, { 
-            scale: 1, 
-            y: 0, 
-            duration: 0.6, 
-            ease: "power2.inOut" 
-          })
-          
-          if (info) {
-            gsap.to(info, { 
-              opacity: 0, 
-              y: 20, 
-              duration: 0.4, 
-              ease: "power2.inOut" 
-            })
-          }
-          
-          if (video) {
-            video.pause()
-            video.style.filter = "grayscale(1) brightness(0.8)"
-          }
+          gsap.to(card, { scale: 1, y: 0, duration: 0.6, ease: "power2.inOut" })
+          gsap.to(info, { opacity: 0, y: 0, duration: 0.3, ease: "power2.inOut" })
+          video.pause()
+          video.style.filter = "grayscale(1) brightness(0.8)"
         },
       })
     })
 
     if (ctaCard && redCircle) {
       gsap.set(ctaCard, { scale: 1, y: 0 })
-      gsap.set(redCircle, { scale: 1 })
+      gsap.set(redCircle, { scale: 1, boxShadow: "none" })
+      // Correction: utiliser le bon sélecteur pour le texte CTA
+      const ctaTextElement = ctaCard.querySelector<HTMLElement>('.cta-text')
+      if (ctaTextElement) {
+        gsap.set(ctaTextElement, { opacity: 0 })
+      }
 
       ScrollTrigger.create({
         trigger: ctaCard,
@@ -233,61 +176,53 @@ export default function ClientsSection() {
         start: "left center",
         end: "right center",
         onEnter: () => {
-          console.log("CTA card entered center")
-          gsap.to(ctaCard, { 
-            scale: 1.05, 
-            y: -50, 
-            duration: 0.8, 
-            ease: "power2.out" 
-          })
-          gsap.to(redCircle, { 
-            scale: 20.6, 
-            duration: 0.8, 
-            ease: "power2.out" 
-          })
+          setCtaActive(true)
+          gsap.to(ctaCard, { scale: 1.05, y: -50, duration: 0.8, ease: "power2.out" })
+          gsap.to(redCircle, { scale: 20, boxShadow: "0 0 0 0 #f00", duration: 0.8, ease: "power2.out" })
+          // Afficher le texte CTA quand la carte est centrée
+          if (ctaTextElement) {
+            gsap.to(ctaTextElement, { opacity: 1, duration: 0.4, delay: 0.2, ease: "power2.out" })
+          }
         },
         onLeave: () => {
-          console.log("CTA card left center")
-          gsap.to(ctaCard, { 
-            scale: 1, 
-            y: 0, 
-            duration: 0.6, 
-            ease: "power2.inOut" 
-          })
-          gsap.to(redCircle, { 
-            scale: 1, 
-            duration: 0.6, 
-            ease: "power2.inOut" 
-          })
+          setCtaActive(false)
+          gsap.to(ctaCard, { scale: 1, y: 0, duration: 0.6, ease: "power2.inOut" })
+          gsap.to(redCircle, { scale: 1, boxShadow: "none", duration: 0.6, ease: "power2.inOut" })
+          // Masquer le texte CTA quand la carte n'est plus centrée
+          if (ctaTextElement) {
+            gsap.to(ctaTextElement, { opacity: 0, duration: 0.3, ease: "power2.inOut" })
+          }
         },
         onEnterBack: () => {
-          console.log("CTA card entered back")
-          gsap.to(ctaCard, { 
-            scale: 1.05, 
-            y: -50, 
-            duration: 0.8, 
-            ease: "power2.out" 
-          })
-          gsap.to(redCircle, { 
-            scale: 20.6, 
-            duration: 0.8, 
-            ease: "power2.out" 
-          })
+          setCtaActive(true)
+          gsap.to(ctaCard, { scale: 1.05, y: -50, duration: 0.8, ease: "power2.out" })
+          gsap.to(redCircle, { scale: 20, boxShadow: "0 0 0 0 #f00", duration: 0.8, ease: "power2.out" })
+          // Afficher le texte CTA quand la carte est centrée (retour arrière)
+          if (ctaTextElement) {
+            gsap.to(ctaTextElement, { opacity: 1, duration: 0.4, delay: 0.2, ease: "power2.out" })
+          }
         },
         onLeaveBack: () => {
-          console.log("CTA card left back")
-          gsap.to(ctaCard, { 
-            scale: 1, 
-            y: 0, 
-            duration: 0.6, 
-            ease: "power2.inOut" 
-          })
-          gsap.to(redCircle, { 
-            scale: 1, 
-            duration: 0.6, 
-            ease: "power2.inOut" 
-          })
+          setCtaActive(false)
+          gsap.to(ctaCard, { scale: 1, y: 0, duration: 0.6, ease: "power2.inOut" })
+          gsap.to(redCircle, { scale: 1, boxShadow: "none", duration: 0.6, ease: "power2.inOut" })
+          // Masquer le texte CTA quand la carte n'est plus centrée (retour arrière)
+          if (ctaTextElement) {
+            gsap.to(ctaTextElement, { opacity: 0, duration: 0.3, ease: "power2.inOut" })
+          }
         },
+      })
+
+      // Hover
+      ctaCard.addEventListener('mouseenter', () => {
+        if (ctaActive) {
+          gsap.to(redCircle, { scale: 24, boxShadow: "0 0 40px 10px #f00", duration: 0.3 })
+        }
+      })
+      ctaCard.addEventListener('mouseleave', () => {
+        if (ctaActive) {
+          gsap.to(redCircle, { scale: 20, boxShadow: "0 0 0 0 #f00", duration: 0.3 })
+        }
       })
     }
 
@@ -318,10 +253,10 @@ export default function ClientsSection() {
     <section
       ref={sectionRef}
       id="clients-section"
-      className="relative h-screen bg-white dark:bg-black overflow-visible"
+      className="relative h-screen bg-black overflow-visible"
       style={{ visibility: "visible" }}
     >
-      <h2 className="text-6xl font-black text-center text-black dark:text-white py-10 mb-10 tracking-tight">
+      <h2 className="text-6xl font-black text-center text-white py-10 mb-10 tracking-tight">
         Previous Work
       </h2>
       <div ref={trackRef} className="flex w-max items-center gap-15 px-20">
@@ -330,7 +265,7 @@ export default function ClientsSection() {
         {restaurants.map((restau, index) => (
           <div
             key={`${restau.nom}-${restau.ville}-${index}`}
-            className={`client-card min-w-[400px] h-[850px] px-6 py-8 rounded-3xl shadow-2xl flex flex-col items-center justify-between text-white text-xl font-semibold gap-6 ${activeCardIndex === index ? 'active-card' : ''}`}
+            className={`client-card min-w-[400px] h-[850px] px-6 py-8 rounded-3xl shadow-2xl flex flex-col items-center justify-between text-white text-xl font-semibold gap-6${activeCardIndex === index ? ' active-card' : ''}`}
           >
             <div className="relative w-[400px] h-[850px] rounded-2xl overflow-hidden">
               <video
@@ -375,19 +310,18 @@ export default function ClientsSection() {
           <div className="h-full flex items-center justify-center px-8 py-12">
             <div className="relative flex items-center gap-6">
               <div className="relative w-14 h-14 z-0">
-                <div className="cta-circle absolute inset-0 rounded-full bg-red-500 transition-transform duration-700"></div>
+                <div className="cta-circle absolute inset-0 rounded-full bg-red-500 transition-all duration-700"></div>
                 <span className="absolute inset-0 flex items-center justify-center text-white text-2xl font-bold z-10 pointer-events-none">
                   →
                 </span>
               </div>
-              <span className="relative text-white text-xl font-semibold z-10">
+              <span className="cta-text relative text-white text-xl font-semibold z-10 opacity-0">
                 Voir tous nos clients
               </span>
             </div>
           </div>
         </div>
-
-        <div className="shrink-0" style={{ width: "20vw" }}></div>
+          <div className="shrink-0" style={{ width: "10vw" }}></div>
       </div>
     </section>
   )
