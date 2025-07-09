@@ -134,11 +134,11 @@ export default function DiscoverUs() {
     <section
       ref={sectionRef}
       className="relative text-white bg-black overflow-hidden min-h-[120vh] mt-20"
+      style={{ backgroundImage: `url(${bgImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
     >
       <div
         ref={backgroundRef}
         className="absolute inset-0 -z-10 w-full h-full"
-        style={{ backgroundImage: `url(${bgImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
       >
         <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px]" />
       </div>

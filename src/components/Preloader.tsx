@@ -17,11 +17,10 @@ export default function Preloader({ onFinish }: PreloaderProps) {
   useEffect(() => {
     if (!redEffectRef.current || !containerRef.current || !logoEntrepriseRef.current || !companyNameRef.current) return
 
-    // Calcul des positions en pixels (pour éviter mélange vw/vh et pixels)
     const centerX = (window.innerWidth / 2 - 125) * -1
     const centerY = window.innerHeight / 2 - 125
 
-    // Initialisation du "light" rouge (halo lumineux)
+    // Initialisation du light rouge (position, taille, style)
     gsap.set(redEffectRef.current, {
       position: "fixed",
       top: 10,
@@ -29,12 +28,9 @@ export default function Preloader({ onFinish }: PreloaderProps) {
       width: 250,
       height: 250,
       borderRadius: "50%",
-    //   backgroundColor: "rgba(248, 0, 0, 0.40)", // Rouge vif et visible
-       background:
+      background:
         "radial-gradient(circle at center, rgba(255, 40, 40, 0.60) 0%, rgba(255, 50, 40, 0.25) 30%, rgba(255, 40, 20, 0.15) 60%, transparent 100%)",
-    //   boxShadow:
-    //     "0 0 25px 8px rgba(255, 60, 60, 0.4), 0 0 50px 18px rgba(255, 50, 40, 0.25), 0 0 90px 35px rgba(255, 40, 20, 0.15)",
-      opacity: 1,
+      opacity: 0,            // Start invisible for fade-in
       filter: "blur(50px)",
       transformOrigin: "center center",
       scale: 1.4,
@@ -67,44 +63,45 @@ export default function Preloader({ onFinish }: PreloaderProps) {
       "<"
     )
 
-    // 4. Apparition de la lumière + flou du texte
-    tl.addLabel("blurAndLight")
+    // 4. Fade-in du light seul (0.5s)
+    tl.to(
+      redEffectRef.current,
+      { opacity: 0.5, duration: 0.5, ease: "power2.out" },
+      "+=0.2"
+    )
+
+    // 5. Apparition simultanée du flou texte et fade-in final du light (1.5s)
     tl.to(
       companyNameRef.current,
       { filter: "blur(0.8px)", duration: 1.5, ease: "power3.inOut" },
-      "blurAndLight"
+      "<"
     )
     tl.to(
       redEffectRef.current,
-      {
-        opacity: 1,
-        duration: 1.5,
-        ease: "power2.out",
-        filter: "blur(40px)",
-      },
-      "blurAndLight"
+      { opacity: 1, duration: 1.5, ease: "power2.out" },
+      "<"
     )
 
-    // 5. Suppression du flou du texte
+    // 6. Suppression du flou du texte
     tl.to(companyNameRef.current, {
       filter: "blur(0px)",
       duration: 0.8,
       ease: "power3.inOut",
     })
 
-    // 6. À partir d'ici, on combine le glissement du "light" rouge en une seule animation fluide avec keyframes
+    // 7. Animation fluide du light avec keyframes
     tl.to(redEffectRef.current, {
-      duration: 8, // durée totale = somme des étapes
+      duration: 8,
       ease: "power2.inOut",
       keyframes: [
-        { x: "-70vw", duration: 1.2},
+        { x: "-70vw", duration: 1.2 },
         { x: "-40vw", y: "60vh", duration: 2.5 },
         { x: 0, duration: 2.5 },
         { x: centerX, y: centerY, duration: 2 },
       ],
     })
 
-    // 7. Transformation en rideau rouge plein écran
+    // 8. Transformation en rideau rouge plein écran
     tl.to(
       redEffectRef.current,
       {
@@ -118,7 +115,7 @@ export default function Preloader({ onFinish }: PreloaderProps) {
       "+=0"
     )
 
-    // 8. Animation finale de sortie vers le haut (container + lumière)
+    // 9. Sortie vers le haut (container + lumière)
     tl.to(
       containerRef.current,
       {
@@ -169,7 +166,7 @@ export default function Preloader({ onFinish }: PreloaderProps) {
       {/* Élément de lumière / rideau rouge */}
       <div
         ref={redEffectRef}
-        className="absolute z-[9998] blur-3xl"
+        className="absolute z-[9998] blur-3xl pointer-events-none"
       />
     </div>
   )

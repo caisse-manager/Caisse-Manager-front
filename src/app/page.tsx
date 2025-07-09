@@ -1,7 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from "react"
-import gsap from "gsap"
+import {useRef, useState } from "react"
 import NavBar from "@/components/Navbar"
 import Fonctionalites from "@/components/Fonctionalites"
 import Contact from "@/components/Contact"
@@ -9,6 +8,7 @@ import PreviousWork from "@/components/PreviousWork"
 import BrandShowcase from "@/components/BrandShowcase"
 import DiscoverUs from "@/components/DiscoverUs"
 import GetStart from "@/components/GetStart"
+import OurValues from "@/components/OurValues"
 import Footer from "@/components/Footer"
 import Preloader from "@/components/Preloader"
 
@@ -44,9 +44,11 @@ export default function HomePageWrapper() {
         <DiscoverUs />
         <BrandShowcase />
         <GetStart />
+        <OurValues />
         <Fonctionalites />
         <Footer />
       </div>
     </>
+
   )
 }
