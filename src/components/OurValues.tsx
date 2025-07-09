@@ -81,7 +81,7 @@ export default function ValuesSection(): React.ReactNode {
         pin: true,
         start: "top top",
         end: `+=${window.innerHeight * 4.5}`,
-        scrub: 1.5,
+        scrub: 0.5,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
@@ -202,7 +202,7 @@ export default function ValuesSection(): React.ReactNode {
             </h2>
           </div>
 
-          <div className="space-y-2 mt-7 ml-30 w-170">
+          <div className="space-y-2 mt-7 ml-28 w-170">
             <h3 className="text-xl font-semibold text-white">Our Values</h3>
             <div className="text-gray-400 text-base leading-relaxed max-w-xl">
               {values.map((value, idx) => (
