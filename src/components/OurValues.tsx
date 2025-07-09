@@ -47,7 +47,6 @@ export default function ValuesSection(): React.ReactNode {
   }, []);
 
   useEffect(() => {
-    // Seulement animer sur desktop
     if (isMobile) return;
 
     const ctx = gsap.context(() => {
@@ -170,7 +169,7 @@ export default function ValuesSection(): React.ReactNode {
           </div>
 
           <div className="space-y-8">
-            {values.map((value, index) => (
+            {values.map((value) => (
               <div
                 key={value.id}
                 className="w-full h-64 relative rounded-xl overflow-hidden"
@@ -193,9 +192,9 @@ export default function ValuesSection(): React.ReactNode {
   return (
     <section 
       ref={sectionRef}
-      className="h-screen bg-black py-4 px-4 md:px-6 lg:px-4 overflow-hidden mt-14"
+      className="h-screen bg-black py-4 px-4 md:px-6 lg:px-4 overflow-hidden m-12"
     >
-      <div className="max-w-[1620px] mx-auto h-full">
+      <div className="max-w-[1220px] mx-auto h-full">
         <div className="grid md:grid-cols-2 gap-4 lg:gap-8 mb-4">
           <div>
             <h2 className="text-2xl md:text-5xl lg:text-8xl font-bold text-white leading-none">
@@ -206,10 +205,10 @@ export default function ValuesSection(): React.ReactNode {
           <div className="space-y-2 mt-7">
             <h3 className="text-xl font-semibold text-white">Our Values</h3>
             <div className="space-y-4">
-              {values.map((value, index) => (
+              {values.map((value, idx) => (
                 <p
                   key={value.id}
-                  ref={(el) => { textLinesRef.current[index] = el; }}
+                  ref={(el) => { textLinesRef.current[idx] = el; }}
                   className="text-gray-400 text-base leading-relaxed transition-all duration-300"
                 >
                   {value.text}
@@ -219,7 +218,7 @@ export default function ValuesSection(): React.ReactNode {
           </div>
         </div>
 
-        <div className="relative w-full h-[60vh] mt-8">
+        <div className="relative w-[180vh] h-[60vh] mt-8">
           <div 
             ref={(el) => { imageContainersRef.current[0] = el; }}
             className="absolute left-0 top-0 w-[65%] h-full overflow-hidden"
@@ -234,7 +233,7 @@ export default function ValuesSection(): React.ReactNode {
               alt={values[0].alt}
               fill
               className="object-cover transition-all duration-700"
-              sizes="55vw"
+              sizes="50vw"
               priority
             />
           </div>
@@ -253,7 +252,7 @@ export default function ValuesSection(): React.ReactNode {
               alt={values[1].alt}
               fill
               className="object-cover transition-all duration-700"
-              sizes="42vw"
+              sizes="37vw"
             />
           </div>
 
@@ -271,7 +270,7 @@ export default function ValuesSection(): React.ReactNode {
               alt={values[2].alt}
               fill
               className="object-cover transition-all duration-700"
-              sizes="42vw"
+              sizes="37vw"
             />
           </div>
         </div>

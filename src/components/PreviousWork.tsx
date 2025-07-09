@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useEffect, useRef, useState } from "react"
-import gsap from "gsap"
-import ScrollTrigger from "gsap/ScrollTrigger"
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import ScrollTrigger from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollTrigger);
 
 const restaurants = [
   {
@@ -37,44 +37,42 @@ const restaurants = [
     ville: "Casablanca",
     adresse: "Maarif, Bd Zerktouni",
   },
-]
+];
 
 export default function ClientsSection() {
-  const sectionRef = useRef<HTMLElement>(null)
-  const trackRef = useRef<HTMLDivElement>(null)
-  const [activeCardIndex, setActiveCardIndex] = useState<number | null>(null)
+  const sectionRef = useRef<HTMLElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [activeCardIndex, setActiveCardIndex] = useState<number | null>(null);
   const [ctaActive, setCtaActive] = useState(false);
 
   useEffect(() => {
-    const section = sectionRef.current
-    const track = trackRef.current
-    if (!section || !track) return
+    const section = sectionRef.current;
+    const track = trackRef.current;
+    if (!section || !track) return;
 
-    // S'assurer que le scroll horizontal est à zéro au chargement
     track.scrollLeft = 0;
     setActiveCardIndex(null);
 
-    ScrollTrigger.getAll().forEach(st => {
+    ScrollTrigger.getAll().forEach((st) => {
       if (st.vars.id === "clients-section-tl") {
-        st.kill()
+        st.kill();
       }
-    })
+    });
 
-    const cards = gsap.utils.toArray<HTMLElement>(".client-card")
-    const ctaCard = section.querySelector<HTMLElement>(".cta-card")
-    const redCircle = ctaCard?.querySelector<HTMLElement>(".cta-circle")
+    const cards = gsap.utils.toArray<HTMLElement>(".client-card");
+    const ctaCard = section.querySelector<HTMLElement>(".cta-card");
+    const redCircle = ctaCard?.querySelector<HTMLElement>(".cta-circle");
 
     if (!ctaCard || !redCircle) {
-      console.warn("CTA card or red circle not found")
-      return
+      console.warn("CTA card or red circle not found");
+      return;
     }
 
     const calculateTrackWidth = () => {
-      const trackWidth = track.scrollWidth
-      const viewportWidth = window.innerWidth
-      // Ajout d'une marge pour permettre de centrer complètement la carte CTA
-      return trackWidth - viewportWidth + (viewportWidth / 2) + 200
-    }
+      const trackWidth = track.scrollWidth;
+      const viewportWidth = window.innerWidth;
+      return trackWidth - viewportWidth + viewportWidth / 2 + 200;
+    };
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -88,40 +86,39 @@ export default function ClientsSection() {
         invalidateOnRefresh: true,
         onUpdate: (self) => {
           if (self.progress > 0) {
-            section.style.visibility = "visible"
+            section.style.visibility = "visible";
           }
-          // Vérifie si aucune carte n'est active (centrée)
           if (!cards.some((card, idx) => activeCardIndex === idx)) {
             setActiveCardIndex(null);
           }
         },
         markers: false,
       },
-    })
+    });
 
     tl.to(track, {
-      x: () => -(calculateTrackWidth()),
+      x: () => -calculateTrackWidth(),
       ease: "none",
-    })
+    });
 
     const restaurantCards = cards.filter(
-      card => !card.classList.contains("cta-card")
-    )
+      (card) => !card.classList.contains("cta-card")
+    );
 
     restaurantCards.forEach((card, index) => {
-      const info = card.querySelector<HTMLElement>(".client-info")
-      const video = card.querySelector<HTMLVideoElement>("video")
+      const info = card.querySelector<HTMLElement>(".client-info");
+      const video = card.querySelector<HTMLVideoElement>("video");
 
       if (!info || !video) {
-        console.warn(`Card ${index}: Missing info or video element`)
-        return
+        console.warn(`Card ${index}: Missing info or video element`);
+        return;
       }
 
-      gsap.set(card, { scale: 1, y: 0 })
-      gsap.set(info, { opacity: 0, y: 0 }) // y: 0 pour éviter le décalage
+      gsap.set(card, { scale: 1, y: 0 });
+      gsap.set(info, { opacity: 0, y: 0 }); 
 
-      video.style.filter = "grayscale(1) brightness(0.8)"
-      video.pause()
+      video.style.filter = "grayscale(1) brightness(0.8)";
+      video.pause();
 
       ScrollTrigger.create({
         trigger: card,
@@ -129,45 +126,96 @@ export default function ClientsSection() {
         start: "left center",
         end: "right center",
         onEnter: () => {
-          setActiveCardIndex(index)
-          gsap.to(card, { scale: 1.05, y: -50, duration: 0.8, ease: "power2.out" })
-          gsap.to(info, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" })
-          video.currentTime = 0
-          video.play().catch(console.error)
-          video.style.filter = "grayscale(0) brightness(1.1) contrast(1.1)"
+          setActiveCardIndex(index);
+          gsap.to(card, {
+            scale: 1.05,
+            y: -50,
+            duration: 0.8,
+            ease: "power2.out",
+          });
+          gsap.to(info, {
+            opacity: 1,
+            y: 0,
+            duration: 0.4,
+            ease: "power2.out",
+          });
+          video.currentTime = 0;
+          setTimeout(() => {
+            video.play().catch((err) => {
+              if (!err.message.includes("interrupted")) {
+                console.error(err);
+              }
+            });
+          }, 50);
+          video.style.filter = "grayscale(0) brightness(1.1) contrast(1.1)";
         },
         onLeave: () => {
-          setActiveCardIndex(null)
-          gsap.to(card, { scale: 1, y: 0, duration: 0.6, ease: "power2.inOut" })
-          gsap.to(info, { opacity: 0, y: 0, duration: 0.3, ease: "power2.inOut" })
-          video.pause()
-          video.style.filter = "grayscale(1) brightness(0.8)"
+          setActiveCardIndex(null);
+          gsap.to(card, {
+            scale: 1,
+            y: 0,
+            duration: 0.6,
+            ease: "power2.inOut",
+          });
+          gsap.to(info, {
+            opacity: 0,
+            y: 0,
+            duration: 0.3,
+            ease: "power2.inOut",
+          });
+          video.pause();
+          video.style.filter = "grayscale(1) brightness(0.8)";
         },
         onEnterBack: () => {
-          setActiveCardIndex(index)
-          gsap.to(card, { scale: 1.05, y: -50, duration: 0.8, ease: "power2.out" })
-          gsap.to(info, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" })
-          video.currentTime = 0
-          video.play().catch(console.error)
-          video.style.filter = "grayscale(0) brightness(1.1) contrast(1.1)"
+          setActiveCardIndex(index);
+          gsap.to(card, {
+            scale: 1.05,
+            y: -50,
+            duration: 0.8,
+            ease: "power2.out",
+          });
+          gsap.to(info, {
+            opacity: 1,
+            y: 0,
+            duration: 0.4,
+            ease: "power2.out",
+          });
+          video.currentTime = 0;
+          setTimeout(() => {
+            video.play().catch((err) => {
+              if (!err.message.includes("interrupted")) {
+                console.error(err);
+              }
+            });
+          }, 50);
+          video.style.filter = "grayscale(0) brightness(1.1) contrast(1.1)";
         },
         onLeaveBack: () => {
-          setActiveCardIndex(null)
-          gsap.to(card, { scale: 1, y: 0, duration: 0.6, ease: "power2.inOut" })
-          gsap.to(info, { opacity: 0, y: 0, duration: 0.3, ease: "power2.inOut" })
-          video.pause()
-          video.style.filter = "grayscale(1) brightness(0.8)"
+          setActiveCardIndex(null);
+          gsap.to(card, {
+            scale: 1,
+            y: 0,
+            duration: 0.6,
+            ease: "power2.inOut",
+          });
+          gsap.to(info, {
+            opacity: 0,
+            y: 0,
+            duration: 0.3,
+            ease: "power2.inOut",
+          });
+          video.pause();
+          video.style.filter = "grayscale(1) brightness(0.8)";
         },
-      })
-    })
+      });
+    });
 
     if (ctaCard && redCircle) {
-      gsap.set(ctaCard, { scale: 1, y: 0 })
-      gsap.set(redCircle, { scale: 1, boxShadow: "none" })
-      // Correction: utiliser le bon sélecteur pour le texte CTA
-      const ctaTextElement = ctaCard.querySelector<HTMLElement>('.cta-text')
+      gsap.set(ctaCard, { scale: 1, y: 0 });
+      gsap.set(redCircle, { scale: 1, boxShadow: "none" });
+      const ctaTextElement = ctaCard.querySelector<HTMLElement>(".cta-text");
       if (ctaTextElement) {
-        gsap.set(ctaTextElement, { opacity: 0 })
+        gsap.set(ctaTextElement, { opacity: 0 });
       }
 
       ScrollTrigger.create({
@@ -176,78 +224,139 @@ export default function ClientsSection() {
         start: "left center",
         end: "right center",
         onEnter: () => {
-          setCtaActive(true)
-          gsap.to(ctaCard, { scale: 1.05, y: -50, duration: 0.8, ease: "power2.out" })
-          gsap.to(redCircle, { scale: 20, boxShadow: "0 0 0 0 #f00", duration: 0.8, ease: "power2.out" })
-          // Afficher le texte CTA quand la carte est centrée
+          setCtaActive(true);
+          gsap.to(ctaCard, {
+            scale: 1.05,
+            y: -50,
+            duration: 0.8,
+            ease: "power2.out",
+          });
+          gsap.to(redCircle, {
+            scale: 20,
+            boxShadow: "0 0 0 0 #f00",
+            duration: 0.8,
+            ease: "power2.out",
+          });
           if (ctaTextElement) {
-            gsap.to(ctaTextElement, { opacity: 1, duration: 0.4, delay: 0.2, ease: "power2.out" })
+            gsap.to(ctaTextElement, {
+              opacity: 1,
+              duration: 0.4,
+              delay: 0.2,
+              ease: "power2.out",
+            });
           }
         },
         onLeave: () => {
-          setCtaActive(false)
-          gsap.to(ctaCard, { scale: 1, y: 0, duration: 0.6, ease: "power2.inOut" })
-          gsap.to(redCircle, { scale: 1, boxShadow: "none", duration: 0.6, ease: "power2.inOut" })
-          // Masquer le texte CTA quand la carte n'est plus centrée
+          setCtaActive(false);
+          gsap.to(ctaCard, {
+            scale: 1,
+            y: 0,
+            duration: 0.6,
+            ease: "power2.inOut",
+          });
+          gsap.to(redCircle, {
+            scale: 1,
+            boxShadow: "none",
+            duration: 0.6,
+            ease: "power2.inOut",
+          });
           if (ctaTextElement) {
-            gsap.to(ctaTextElement, { opacity: 0, duration: 0.3, ease: "power2.inOut" })
+            gsap.to(ctaTextElement, {
+              opacity: 0,
+              duration: 0.3,
+              ease: "power2.inOut",
+            });
           }
         },
         onEnterBack: () => {
-          setCtaActive(true)
-          gsap.to(ctaCard, { scale: 1.05, y: -50, duration: 0.8, ease: "power2.out" })
-          gsap.to(redCircle, { scale: 20, boxShadow: "0 0 0 0 #f00", duration: 0.8, ease: "power2.out" })
-          // Afficher le texte CTA quand la carte est centrée (retour arrière)
+          setCtaActive(true);
+          gsap.to(ctaCard, {
+            scale: 1.05,
+            y: -50,
+            duration: 0.8,
+            ease: "power2.out",
+          });
+          gsap.to(redCircle, {
+            scale: 20,
+            boxShadow: "0 0 0 0 #f00",
+            duration: 0.8,
+            ease: "power2.out",
+          });
           if (ctaTextElement) {
-            gsap.to(ctaTextElement, { opacity: 1, duration: 0.4, delay: 0.2, ease: "power2.out" })
+            gsap.to(ctaTextElement, {
+              opacity: 1,
+              duration: 0.4,
+              delay: 0.2,
+              ease: "power2.out",
+            });
           }
         },
         onLeaveBack: () => {
-          setCtaActive(false)
-          gsap.to(ctaCard, { scale: 1, y: 0, duration: 0.6, ease: "power2.inOut" })
-          gsap.to(redCircle, { scale: 1, boxShadow: "none", duration: 0.6, ease: "power2.inOut" })
-          // Masquer le texte CTA quand la carte n'est plus centrée (retour arrière)
+          setCtaActive(false);
+          gsap.to(ctaCard, {
+            scale: 1,
+            y: 0,
+            duration: 0.6,
+            ease: "power2.inOut",
+          });
+          gsap.to(redCircle, {
+            scale: 1,
+            boxShadow: "none",
+            duration: 0.6,
+            ease: "power2.inOut",
+          });
           if (ctaTextElement) {
-            gsap.to(ctaTextElement, { opacity: 0, duration: 0.3, ease: "power2.inOut" })
+            gsap.to(ctaTextElement, {
+              opacity: 0,
+              duration: 0.3,
+              ease: "power2.inOut",
+            });
           }
         },
-      })
+      });
 
-      // Hover
-      ctaCard.addEventListener('mouseenter', () => {
+      ctaCard.addEventListener("mouseenter", () => {
         if (ctaActive) {
-          gsap.to(redCircle, { scale: 24, boxShadow: "0 0 40px 10px #f00", duration: 0.3 })
+          gsap.to(redCircle, {
+            scale: 24,
+            boxShadow: "0 0 40px 10px #f00",
+            duration: 0.3,
+          });
         }
-      })
-      ctaCard.addEventListener('mouseleave', () => {
+      });
+      ctaCard.addEventListener("mouseleave", () => {
         if (ctaActive) {
-          gsap.to(redCircle, { scale: 20, boxShadow: "0 0 0 0 #f00", duration: 0.3 })
+          gsap.to(redCircle, {
+            scale: 20,
+            boxShadow: "0 0 0 0 #f00",
+            duration: 0.3,
+          });
         }
-      })
+      });
     }
 
-    ScrollTrigger.refresh()
+    ScrollTrigger.refresh();
 
     const handleResize = () => {
-      ScrollTrigger.refresh()
-    }
-    window.addEventListener("resize", handleResize)
+      ScrollTrigger.refresh();
+    };
+    window.addEventListener("resize", handleResize);
 
     const observer = new ResizeObserver(() => {
-      ScrollTrigger.refresh()
-    })
-    if (track) observer.observe(track)
+      ScrollTrigger.refresh();
+    });
+    if (track) observer.observe(track);
 
     return () => {
-      ScrollTrigger.getAll().forEach(st => {
+      ScrollTrigger.getAll().forEach((st) => {
         if (st.vars.id === "clients-section-tl") {
-          st.kill()
+          st.kill();
         }
-      })
-      window.removeEventListener("resize", handleResize)
-      observer.disconnect()
-    }
-  }, [])
+      });
+      window.removeEventListener("resize", handleResize);
+      observer.disconnect();
+    };
+  }, []);
 
   return (
     <section
@@ -265,7 +374,9 @@ export default function ClientsSection() {
         {restaurants.map((restau, index) => (
           <div
             key={`${restau.nom}-${restau.ville}-${index}`}
-            className={`client-card min-w-[400px] h-[850px] px-6 py-8 rounded-3xl shadow-2xl flex flex-col items-center justify-between text-white text-xl font-semibold gap-6${activeCardIndex === index ? ' active-card' : ''}`}
+            className={`client-card min-w-[400px] h-[850px] px-6 py-8 rounded-3xl shadow-2xl flex flex-col items-center justify-between text-white text-xl font-semibold gap-6${
+              activeCardIndex === index ? " active-card" : ""
+            }`}
           >
             <div className="relative w-[400px] h-[850px] rounded-2xl overflow-hidden">
               <video
@@ -276,17 +387,17 @@ export default function ClientsSection() {
                 muted
                 className="w-full h-full object-cover transition-all duration-500"
                 style={{
-                  filter: "grayscale(1) brightness(0.8)"
+                  filter: "grayscale(1) brightness(0.8)",
                 }}
                 onLoadedMetadata={(e) => {
-                  const video = e.target as HTMLVideoElement
-                  const ratio = video.videoWidth / video.videoHeight
-                  video.style.width = "100%"
-                  video.style.height = `calc(100% / ${ratio})`
+                  const video = e.target as HTMLVideoElement;
+                  const ratio = video.videoWidth / video.videoHeight;
+                  video.style.width = "100%";
+                  video.style.height = `calc(100% / ${ratio})`;
                 }}
                 onLoadStart={(e) => {
-                  const video = e.target as HTMLVideoElement
-                  video.pause()
+                  const video = e.target as HTMLVideoElement;
+                  video.pause();
                 }}
               >
                 Your browser does not support the video tag.
@@ -305,7 +416,7 @@ export default function ClientsSection() {
             </div>
           </div>
         ))}
-        
+
         <div className="client-card cta-card min-w-[400px] h-[600px] bg-[#111] dark:bg-[#111] rounded-3xl shadow-2xl cursor-pointer group overflow-hidden relative">
           <div className="h-full flex items-center justify-center px-8 py-12">
             <div className="relative flex items-center gap-6">
@@ -321,8 +432,8 @@ export default function ClientsSection() {
             </div>
           </div>
         </div>
-          <div className="shrink-0" style={{ width: "10vw" }}></div>
+        <div className="shrink-0" style={{ width: "10vw" }}></div>
       </div>
     </section>
-  )
+  );
 }
