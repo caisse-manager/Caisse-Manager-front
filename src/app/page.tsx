@@ -30,7 +30,7 @@ export default function HomePageWrapper() {
         ref={homePageRef}
         className="min-h-screen bg-white dark:bg-black text-black dark:text-white"
         style={{
-          position: "fixed",
+          // position: "fixed",
           top: 0,
           left: 0,
           width: "100%",
