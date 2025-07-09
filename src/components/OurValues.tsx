@@ -150,12 +150,10 @@ export default function ValuesSection(): React.ReactNode {
     return (
       <section className="bg-black py-8 px-4 mt-14">
         <div className="max-w-4xl mx-auto">
-          {/* Titre */}
           <h2 className="text-3xl font-bold text-white leading-tight mb-8">
             Designing impactful solutions.
           </h2>
 
-          {/* Paragraphe d'intro */}
           <div className="mb-12">
             <h3 className="text-xl font-semibold text-white mb-6">
               Our Values
@@ -204,7 +202,7 @@ export default function ValuesSection(): React.ReactNode {
             </h2>
           </div>
 
-          <div className="space-y-2 mt-7">
+          <div className="space-y-2 mt-7 ml-30 w-170">
             <h3 className="text-xl font-semibold text-white">Our Values</h3>
             <div className="text-gray-400 text-base leading-relaxed max-w-xl">
               {values.map((value, idx) => (
