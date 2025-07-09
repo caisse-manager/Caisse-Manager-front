@@ -42,7 +42,7 @@ export default function Preloader({ onFinish }: PreloaderProps) {
       scale: 1.4,
       x: 0,
       y: 0,
-      zIndex: 9998,
+      zIndex: 9999,
     })
 
     const tl = gsap.timeline()
@@ -95,7 +95,7 @@ export default function Preloader({ onFinish }: PreloaderProps) {
       "<+0.5"
     )
 
-    // 7. Animation fluide du light (enchainée sans pause)
+    // 7. Animation fluide du light (enchaînée sans pause)
     tl.to(
       redEffectRef.current,
       {
@@ -111,7 +111,7 @@ export default function Preloader({ onFinish }: PreloaderProps) {
       "<+0.2"
     )
 
-    // 8. Expansion en rideau rouge plein écran
+    // 8. Expansion en rideau rouge plein écran + disparition logo et nom
     tl.to(
       redEffectRef.current,
       {
@@ -119,10 +119,21 @@ export default function Preloader({ onFinish }: PreloaderProps) {
         borderRadius: "0%",
         filter: "blur(0px)",
         backgroundColor: "#f80000",
-        duration: 0.3,
+        duration: 0.1,
         ease: "power3.out",
       },
-      "+=0"
+      
+    )
+
+    tl.to(
+      [logoEntrepriseRef.current, companyNameRef.current],
+      {
+        opacity: 0,
+        scale: 0.8,
+        duration: 0.1,
+        ease: "power3.out",
+      },
+      "<" // en même temps que l'expansion du rideau
     )
 
     // 9. Sortie vers le haut (container + lumière)
