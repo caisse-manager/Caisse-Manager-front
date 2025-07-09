@@ -156,15 +156,12 @@ export default function BrandShowcase() {
     >
       <div className="flex w-full h-full px-16 md:px-20 gap-8 items-center justify-center">
         <div className="w-1/2 flex flex-col justify-center items-start space-y-4">
-          {textLines.map((line, i) => (
-            <div
-              key={i}
-              ref={(el) => { textRefs.current[i] = el; }}
-              className="text-white text-[8vw] md:text-[5.5vw] lg:text-[4.2vw] xl:text-[3.8vw] font-black leading-[0.9] tracking-tight"
-            >
-              {line}
-            </div>
-          ))}
+          <div
+            ref={(el) => { textRefs.current[0] = el; }}
+            className="text-white text-[8vw] md:text-[5.5vw] lg:text-[4.2vw] xl:text-[3.8vw] font-black leading-[0.9] tracking-tight"
+          >
+            {textLines.join(" ")}
+          </div>
         </div>
         <div className="w-1/2 h-full overflow-hidden flex items-center justify-center">
           <div ref={listRef} className="flex flex-col gap-40 py-10">

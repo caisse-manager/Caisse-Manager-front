@@ -12,8 +12,6 @@ export default function ValuesSection(): React.ReactNode {
   const textLinesRef = useRef<Array<HTMLParagraphElement | null>>([]);
   const imagesRef = useRef<Array<HTMLImageElement | null>>([]);
   const imageContainersRef = useRef<Array<HTMLDivElement | null>>([]);
-  
-  const fadeOutTriggered = useRef(false);
 
   const values = [
     {
@@ -38,152 +36,101 @@ export default function ValuesSection(): React.ReactNode {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.set(textLinesRef.current, {
-        color: '#9CA3AF',
-        fontWeight: 'normal'
-      });
+      const section = sectionRef.current;
+      if (!section) return;
 
-      gsap.set(imageContainersRef.current, {
-        filter: 'grayscale(100%)',
-        scale: 1
-      });
-
-      const calculateScrollDistance = () => {
-        const vh = window.innerHeight;
-        return `+=${vh * 4.5}px`;
-      };
-
-      const activateValue = (index: number, progress: number) => {
-        if (fadeOutTriggered.current) return;
+      // Initial state: first element active, others inactive
+      values.forEach((_, i) => {
+        const textEl = textLinesRef.current[i];
+        const imageEl = imageContainersRef.current[i];
         
-        const itemProgress = (progress - (index * 0.33)) * 3; 
-        if (index > 0 && textLinesRef.current[index - 1] && imageContainersRef.current[index - 1]) {
-          gsap.to(textLinesRef.current[index - 1], {
-            color: '#9CA3AF',
-            fontWeight: 'normal',
-            duration: 0.3,
-            ease: "power2.inOut"
-          });
-
-          gsap.to(imageContainersRef.current[index - 1], {
-            filter: 'grayscale(100%)',
-            scale: 1,
-            duration: 0.3,
-            ease: "power2.inOut"
+        if (textEl) {
+          gsap.set(textEl, { 
+            color: i === 0 ? "#FFFFFF" : "#9CA3AF", 
+            fontWeight: i === 0 ? 700 : 400 
           });
         }
-
-        if (textLinesRef.current[index] && imageContainersRef.current[index]) {
-          gsap.to(textLinesRef.current[index], {
-            color: '#FFFFFF',
-            fontWeight: 'bold',
-            duration: 0.5,
-            ease: "power2.out"
-          });
-
-          gsap.to(imageContainersRef.current[index], {
-            filter: `grayscale(${gsap.utils.interpolate(100, 0, itemProgress)}%)`,
-            scale: gsap.utils.interpolate(1, 1.05, itemProgress),
-            duration: 0.5,
-            ease: "power2.out"
+        
+        if (imageEl) {
+          gsap.set(imageEl, { 
+            filter: i === 0 ? "grayscale(0%) brightness(1.2)" : "grayscale(100%)",
+            scale: i === 0 ? 1.05 : 1
           });
         }
-      };
+      });
 
-      const triggerFadeOut = (progress: number) => {
-        if (!fadeOutTriggered.current) {
-          fadeOutTriggered.current = true;
-          
-          const fadeProgress = gsap.utils.mapRange(0.9, 1.0, 0, 1, progress);
-          
-          gsap.to(imageContainersRef.current, {
-            filter: 'grayscale(100%)',
-            opacity: gsap.utils.interpolate(1, 0, fadeProgress),
-            scale: gsap.utils.interpolate(1.05, 1, fadeProgress), 
-            duration: 1,
-            ease: "power2.inOut",
-            stagger: 0.1
-          });
+      const total = values.length;
+      const step = 1 / total;
 
-          gsap.to(textLinesRef.current, {
-            color: '#9CA3AF',
-            opacity: gsap.utils.interpolate(1, 0, fadeProgress),
-            fontWeight: 'normal',
-            duration: 1,
-            ease: "power2.inOut",
-            stagger: 0.1
-          });
-        } else {
-          const fadeProgress = gsap.utils.mapRange(0.9, 1.0, 0, 1, progress);
-          
-          gsap.set(imageContainersRef.current, {
-            opacity: gsap.utils.interpolate(1, 0, fadeProgress),
-            scale: gsap.utils.interpolate(1.05, 1, fadeProgress)
-          });
-
-          gsap.set(textLinesRef.current, {
-            opacity: gsap.utils.interpolate(1, 0, fadeProgress)
-          });
-        }
-      };
-
-      const resetFadeOut = () => {
-        if (fadeOutTriggered.current) {
-          fadeOutTriggered.current = false;
-          
-          gsap.set(imageContainersRef.current, {
-            opacity: 1,
-            filter: 'grayscale(100%)',
-            scale: 1
-          });
-
-          gsap.set(textLinesRef.current, {
-            opacity: 1,
-            color: '#9CA3AF',
-            fontWeight: 'normal'
-          });
-        }
-      };
-
-      const pinnedSection = ScrollTrigger.create({
-        trigger: sectionRef.current,
+      ScrollTrigger.create({
+        trigger: section,
         pin: true,
         start: "top top",
-        end: calculateScrollDistance(),
-        scrub: 1.5, 
+        end: `+=${window.innerHeight * 4.5}`,
+        scrub: 1.5,
         anticipatePin: 1,
-        invalidateOnRefresh: true, 
+        invalidateOnRefresh: true,
         onUpdate: (self) => {
           const progress = self.progress;
           
-          if (progress >= 0.9) {
-            triggerFadeOut(progress);
-          } else {
-            if (fadeOutTriggered.current) {
-              resetFadeOut();
+          // Calculate current active index
+          let currentIndex = Math.floor(progress / step);
+          if (currentIndex >= total) currentIndex = total - 1;
+
+          // Update all elements
+          values.forEach((_, i) => {
+            const textEl = textLinesRef.current[i];
+            const imageEl = imageContainersRef.current[i];
+            
+            if (textEl) {
+              if (i === currentIndex) {
+                // Active text: white and bold
+                gsap.to(textEl, { 
+                  color: "#FFFFFF", 
+                  fontWeight: 700, 
+                  duration: 0.5, 
+                  ease: "power2.out" 
+                });
+              } else {
+                // Inactive text: gray and normal
+                gsap.to(textEl, { 
+                  color: "#9CA3AF", 
+                  fontWeight: 400, 
+                  duration: 0.5, 
+                  ease: "power2.out" 
+                });
+              }
             }
             
-            if (progress <= 0.33) {
-              activateValue(0, progress * 3);
-            } else if (progress <= 0.66) {
-              activateValue(1, (progress - 0.33) * 3);
-            } else {
-              activateValue(2, (progress - 0.66) * 3);
+            if (imageEl) {
+              if (i === currentIndex) {
+                // Active image: color and zoomed
+                gsap.to(imageEl, { 
+                  filter: "grayscale(0%) brightness(1.2) sepia(0.3) hue-rotate(-10deg) saturate(1.5)",
+                  scale: 1.05, 
+                  duration: 0.5, 
+                  ease: "power2.out" 
+                });
+              } else {
+                // Inactive image: grayscale and normal scale
+                gsap.to(imageEl, { 
+                  filter: "grayscale(100%)",
+                  scale: 1, 
+                  duration: 0.5, 
+                  ease: "power2.out" 
+                });
+              }
             }
-          }
+          });
         }
       });
 
-      const handleResize = () => {
-        ScrollTrigger.refresh();
-      };
-
+      const handleResize = () => ScrollTrigger.refresh();
       window.addEventListener('resize', handleResize);
 
       return () => {
         window.removeEventListener('resize', handleResize);
-        pinnedSection.kill();
-        fadeOutTriggered.current = false;
+        ScrollTrigger.getAll().forEach(st => st.kill());
       };
     }, sectionRef);
 
@@ -195,7 +142,7 @@ export default function ValuesSection(): React.ReactNode {
       ref={sectionRef}
       className="h-screen bg-black py-4 px-4 md:px-6 lg:px-4 overflow-hidden mt-14"
     >
-      <div className="max-w-[1620px] mx-auto h-full ">
+      <div className="max-w-[1620px] mx-auto h-full">
         <div className="grid md:grid-cols-2 gap-4 lg:gap-8 mb-4">
           <div>
             <h2 className="text-2xl md:text-5xl lg:text-8xl font-bold text-white leading-none">
