@@ -85,7 +85,7 @@ export default function FAQ() {
       </h1>
 
       <div className="flex justify-between flex-wrap">
-        <ul className="max-w-3xl w-full pt-4 mb-6">
+        <ul className="max-w-2xl w-full pt-4 mb-6">
           {faqs.map((faq, index) => (
             <li
               key={index}
@@ -128,7 +128,7 @@ export default function FAQ() {
           ))}
         </ul>
 
-        <section className="max-w-4xl mx-auto flex justify-center h-full sticky top-5 self-start">
+        <section className="max-w-3xl mx-auto flex justify-center h-full sticky top-5 self-start">
           <div className="border dark:border-gray-500 border-gray-700 rounded-md p-4">
             <Image
               src="/caisse-manager-logo.png"
