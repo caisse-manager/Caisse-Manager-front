@@ -215,7 +215,7 @@ export default function ClientsSection() {
       gsap.set(redCircle, { scale: 1, boxShadow: "none" });
       const ctaTextElement = ctaCard.querySelector<HTMLElement>(".cta-text");
       if (ctaTextElement) {
-        gsap.set(ctaTextElement, { opacity: 0 });
+        gsap.set(ctaTextElement, { opacity: 1 });
       }
 
       ScrollTrigger.create({
@@ -262,7 +262,7 @@ export default function ClientsSection() {
           });
           if (ctaTextElement) {
             gsap.to(ctaTextElement, {
-              opacity: 0,
+              opacity: 1,
               duration: 0.3,
               ease: "power2.inOut",
             });
@@ -426,7 +426,7 @@ export default function ClientsSection() {
                   →
                 </span>
               </div>
-              <span className="cta-text relative text-white text-xl font-semibold z-10 opacity-0">
+              <span className="cta-text relative text-white text-xl font-semibold z-10">
                 Voir tous nos clients
               </span>
             </div>

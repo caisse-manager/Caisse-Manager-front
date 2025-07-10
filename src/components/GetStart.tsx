@@ -32,12 +32,12 @@ export default function GetStart() {
 
   const GetStartedButton = () => (
     <motion.div
-      className="absolute z-20"
+      className="absolute z-20 hidden md:block"
       style={{
-        left: '50%',
-        top: '18%',
-        translateX: '115%',
-        translateY: '75%',
+        left: "50%",
+        top: "18%",
+        translateX: "115%",
+        translateY: "75%",
         width: 180,
         height: 64,
         x: springX,
@@ -47,7 +47,18 @@ export default function GetStart() {
     >
       <motion.button
         className="w-full h-full bg-red-500 text-white rounded-full font-semibold shadow-2xl text-lg cursor-pointer px-6"
-        whileHover={{ scale: 1.1, rotate: 0 }} 
+        whileHover={{ scale: 1.1, rotate: 0 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        GET STARTED
+      </motion.button>
+    </motion.div>
+  );
+
+  const MobileGetStartedButton = () => (
+    <motion.div className="md:hidden mt-8">
+      <motion.button
+        className="bg-red-500 text-white rounded-full font-semibold shadow-xl text-sm cursor-pointer px-4 py-2"
         whileTap={{ scale: 0.95 }}
       >
         GET STARTED
@@ -61,41 +72,46 @@ export default function GetStart() {
       y: 100,
       opacity: 0,
       duration: 1.2,
-      ease: "power3.out"
+      ease: "power3.out",
     });
   }, []);
 
   return (
     <div
       ref={heroRef}
-      className="h-[50vh] relative overflow-hidden bg-black text-white flex flex-col items-center justify-center mt-10"
+      className="h-[60vh] md:h-[50vh] relative overflow-hidden bg-black text-white flex flex-col items-center justify-center mt-10"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
       <GetStartedButton />
 
-      <div className="text-center space-y-4" ref={brandTextRef}>
-        <div className="flex items-center justify-center space-x-4">
+      <div
+        className="text-center space-y-2 md:space-y-4 px-4"
+        ref={brandTextRef}
+      >
+        <div className="flex flex-col md:flex-row items-center justify-center md:space-x-4">
           <AnimatedText
             text="Caisse"
-            className="text-6xl md:text-8xl lg:text-9xl font-bold italic"
+            className="text-4xl sm:text-5xl md:text-7xl lg:text-9xl font-bold italic"
           />
           <Image
             src="/caisse-manager-logo.png"
-            alt="sample"
-            width={80}
-            height={80}
-            className="rounded-md"
+            alt="Caisse Manager Logo"
+            width={60}
+            height={60}
+            className="rounded-md my-2 md:my-0 md:w-[80px] md:h-[80px] w-[60px] h-[60px]"
           />
           <AnimatedText
             text="Manager"
-            className="text-6xl md:text-8xl lg:text-9xl font-bold italic"
+            className="text-4xl sm:text-5xl md:text-7xl lg:text-9xl font-bold italic"
           />
         </div>
 
-        <p className="mt-8 text-gray-400 text-lg md:text-xl">
+        <p className="mt-4 md:mt-8 text-gray-400 text-base md:text-xl">
           Let&apos;s find your perfect match.
         </p>
+
+        <MobileGetStartedButton />
       </div>
     </div>
   );

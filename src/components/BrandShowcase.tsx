@@ -167,12 +167,12 @@ export default function BrandShowcase() {
       ref={sectionRef}
       className="bg-black relative transition-colors duration-500 brandshow-section brandshow-synchronized"
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-black dark:via-gray-900/50 dark:to-black transition-colors duration-500"></div>
+      <div className="absolute inset-0bg-black transition-colors duration-500"></div>
 
       <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-blue-500 dark:bg-blue-500 rounded-full animate-pulse"></div>
-        <div className="absolute top-3/4 right-1/3 w-1 h-1 bg-purple-500 dark:bg-purple-500 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute bottom-1/4 left-1/3 w-1.5 h-1.5 bg-cyan-500 dark:bg-cyan-500 rounded-full animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/4 left-1/4 w-2 h-2rounded-full animate-pulse"></div>
+        <div className="absolute top-3/4 right-1/3 w-1 h-1 rounded-full animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-1/4 left-1/3 w-1.5 h-1.5 rounded-full animate-pulse" style={{ animationDelay: '2s' }}></div>
       </div>
 
       <div className="relative z-10 max-w-full">
