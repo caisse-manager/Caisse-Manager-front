@@ -34,18 +34,6 @@ const SliderCard: React.FC<SliderCardProps> = ({ coverImage, hoverImage, title }
           style={{ userSelect: 'none' }}
         />
 
-        {/* Image au survol */}
-        <motion.img
-          src={hoverImage}
-          alt={`${title} hover`}
-          className="absolute inset-0 w-full h-full object-cover rounded-xl"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: isHovered ? 1 : 0, scale: isHovered ? 1 : 0.95 }}
-          transition={{ duration: 0.4, ease: 'easeInOut' }}
-          loading="lazy"
-          style={{ userSelect: 'none' }}
-        />
-
         {/* Overlay sombre en dégradé */}
         <motion.div
           className="absolute inset-0 rounded-xl bg-gradient-to-t from-black/80 via-transparent to-transparent"
