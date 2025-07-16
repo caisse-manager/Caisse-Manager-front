@@ -6,9 +6,9 @@ import { gsap } from 'gsap';
 import SliderCard from './SliderCard';
 
 const ProjectSlider: React.FC = () => {
-  const itemsPerView = 2;
-  const cardWidth = 390;
-  const gap = 12;
+  const [itemsPerView, setItemsPerView] = useState(2);
+  const [cardWidth, setCardWidth] = useState(390);
+  const [gap, setGap] = useState(12);
 
   const sliderItems = [
     {
@@ -83,7 +83,6 @@ const ProjectSlider: React.FC = () => {
       coverImage: "https://images.pexels.com/photos/3184632/pexels-photo-3184632.jpeg?auto=compress&cs=tinysrgb&w=800",
       hoverImage: "https://images.pexels.com/photos/3184633/pexels-photo-3184633.jpeg?auto=compress&cs=tinysrgb&w=800"
     }
-
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -93,11 +92,39 @@ const ProjectSlider: React.FC = () => {
   const trackRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
 
+  // Responsive configuration
+  useEffect(() => {
+    const updateDimensions = () => {
+      const width = window.innerWidth;
+      
+      if (width < 768) {
+        // Mobile
+        setItemsPerView(1);
+        setCardWidth(Math.min(350, width - 40));
+        setGap(8);
+      } else if (width < 1024) {
+        // Tablet
+        setItemsPerView(1);
+        setCardWidth(400);
+        setGap(10);
+      } else {
+        // Desktop
+        setItemsPerView(2);
+        setCardWidth(390);
+        setGap(12);
+      }
+    };
+
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+    return () => window.removeEventListener('resize', updateDimensions);
+  }, []);
+
   const slide = (dir: 'next' | 'prev') => {
     if (isAnimating) return;
     setIsAnimating(true);
     setDirection(dir);
-
+    console.log(isAnimating)
     setCurrentIndex((prev) => {
       return dir === 'next'
         ? (prev + 1) % sliderItems.length
@@ -108,7 +135,11 @@ const ProjectSlider: React.FC = () => {
   useEffect(() => {
     if (!direction) return;
 
-    const offsetX = direction === 'next' ? -(cardWidth + gap) : (cardWidth + gap);
+    // Utiliser les valeurs actuelles au moment de l'exécution
+    const currentCardWidth = cardWidth;
+    const currentGap = gap;
+    const offsetX = direction === 'next' ? -(currentCardWidth + currentGap) : (currentCardWidth + currentGap);
+    
     const tl = gsap.timeline({
       onComplete: () => {
         setIsAnimating(false);
@@ -144,11 +175,11 @@ const ProjectSlider: React.FC = () => {
 
       if (direction === 'next' && currentIndex === 0) {
         gsap.set(trackRef.current, {
-          x: newX + sliderItems.length * (cardWidth + gap)
+          x: newX + sliderItems.length * (currentCardWidth + currentGap)
         });
       } else if (direction === 'prev' && currentIndex === sliderItems.length - 1) {
         gsap.set(trackRef.current, {
-          x: newX - sliderItems.length * (cardWidth + gap)
+          x: newX - sliderItems.length * (currentCardWidth + currentGap)
         });
       }
     });
@@ -178,78 +209,169 @@ const ProjectSlider: React.FC = () => {
         );
       }
     }
-  }, [currentIndex, direction]);
+  }, [currentIndex, direction, cardWidth, gap, itemsPerView]);
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden flex items-center">
-      {/* Left Text Section */}
-      <div className="relative z-30 flex-shrink-0 m-8 p-6 rounded-lg" style={{ maxWidth: 400, height: 260 }}>
-        <h1 className="text-3xl lg:text-4xl font-bold leading-tight tracking-tight mb-6 select-none">
-          <span className="block relative">
-            Taking digital experiences
-            <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent blur-sm -z-10"></div>
-          </span>
-          <span className="block text-red-500 relative">
-            to new heights
-            <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 to-transparent blur-sm -z-10"></div>
-          </span>
-        </h1>
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+      {/* Mobile & Tablet Layout */}
+      <div className="block lg:hidden">
+        <div className="flex flex-col items-center justify-center min-h-screen p-4">
+          {/* Text Section */}
+          <div className="text-center mb-8 max-w-md">
+            <h1 className="text-2xl md:text-3xl font-bold leading-tight tracking-tight mb-6 select-none">
+              <span className="block relative">
+                Taking digital experiences
+                <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent blur-sm -z-10"></div>
+              </span>
+              <span className="block text-red-500 relative">
+                to new heights
+                <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 to-transparent blur-sm -z-10"></div>
+              </span>
+            </h1>
 
-        <div className="w-20 h-1 bg-gradient-to-r from-red-500 to-red-600 mb-8 rounded-full shadow-lg shadow-red-500/50"></div>
+            <div className="w-20 h-1 bg-gradient-to-r from-red-500 to-red-600 mb-6 rounded-full shadow-lg shadow-red-500/50 mx-auto"></div>
 
-        <p className="text-sm text-white/80 mb-12 leading-relaxed font-light">
-          Notre expertise et notre expérience nous permettent de livrer des sites web de première classe pour pratiquement tous les secteurs.
-        </p>
+            <p className="text-sm text-white/80 mb-8 leading-relaxed font-light">
+              Notre expertise et notre expérience nous permettent de livrer des sites web de première classe pour pratiquement tous les secteurs.
+            </p>
 
-        <div className="flex gap-4">
-          <button
-            onClick={() => slide('prev')}
-            disabled={isAnimating}
-            className={`p-3 rounded-full border-2 transition-all duration-300 ${
-              !isAnimating
-                ? 'border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
-                : 'border-gray-600 text-gray-600'
-            }`}
+            <div className="flex gap-4 justify-center">
+              <button
+                onClick={() => slide('prev')}
+                disabled={isAnimating}
+                className={`p-3 rounded-full border-2 transition-all duration-300 ${
+                  !isAnimating
+                    ? 'border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
+                    : 'border-gray-600 text-gray-600'
+                }`}
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <button
+                onClick={() => slide('next')}
+                disabled={isAnimating}
+                className={`p-3 rounded-full border-2 transition-all duration-300 ${
+                  !isAnimating
+                    ? 'border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
+                    : 'border-gray-600 text-gray-600'
+                }`}
+              >
+                <ChevronRight size={20} />
+              </button>
+            </div>
+          </div>
+
+          {/* Slider Section */}
+          <div
+            className="relative flex items-center justify-center overflow-visible"
+            style={{ width: cardWidth, height: 280 }}
           >
-            <ChevronLeft size={24} />
-          </button>
-          <button
-            onClick={() => slide('next')}
-            disabled={isAnimating}
-            className={`p-3 rounded-full border-2 transition-all duration-300 ${
-              !isAnimating
-                ? 'border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
-                : 'border-gray-600 text-gray-600'
-            }`}
-          >
-            <ChevronRight size={24} />
-          </button>
+            <div
+              className="flex"
+              ref={trackRef}
+              style={{ 
+                transform: 'translateX(0px)', 
+                position: 'relative', 
+                zIndex: 5,
+                gap: `${gap}px`
+              }}
+            >
+              {sliderItems.map((item, index) => (
+                <div
+                  key={item.id}
+                  ref={(el) => (cardsRef.current[index] = el)}
+                  style={{ width: cardWidth, height: 250 }}
+                >
+                  <SliderCard
+                    title={item.title}
+                    coverImage={item.coverImage}
+                    hoverImage={item.hoverImage}
+                    width={cardWidth}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Right Slider Section */}
-      <div
-        className="relative z-10 flex items-center overflow-visible"
-        style={{ width: cardWidth * itemsPerView + gap * (itemsPerView - 1), height: 260 }}
-      >
-        <div
-          className="flex gap-3"
-          ref={trackRef}
-          style={{ transform: 'translateX(0px)', position: 'relative', zIndex: 5 }}
-        >
-          {sliderItems.map((item, index) => (
-            <div
-              key={item.id}
-              ref={(el) => (cardsRef.current[index] = el)}
-              style={{ width: cardWidth, height: 220 }}
+      {/* Desktop Layout */}
+      <div className="hidden lg:flex items-center min-h-screen">
+        {/* Left Text Section */}
+        <div className="relative z-30 flex-shrink-0 m-8 p-6 rounded-lg" style={{ maxWidth: 400, height: 260 }}>
+          <h1 className="text-3xl xl:text-4xl font-bold leading-tight tracking-tight mb-6 select-none">
+            <span className="block relative">
+              Taking digital experiences
+              <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent blur-sm -z-10"></div>
+            </span>
+            <span className="block text-red-500 relative">
+              to new heights
+              <div className="absolute inset-0 bg-gradient-to-r from-red-500/20 to-transparent blur-sm -z-10"></div>
+            </span>
+          </h1>
+
+          <div className="w-20 h-1 bg-gradient-to-r from-red-500 to-red-600 mb-8 rounded-full shadow-lg shadow-red-500/50"></div>
+
+          <p className="text-sm text-white/80 mb-12 leading-relaxed font-light">
+            Notre expertise et notre expérience nous permettent de livrer des sites web de première classe pour pratiquement tous les secteurs.
+          </p>
+
+          <div className="flex gap-4">
+            <button
+              onClick={() => slide('prev')}
+              disabled={isAnimating}
+              className={`p-3 rounded-full border-2 transition-all duration-300 ${
+                !isAnimating
+                  ? 'border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
+                  : 'border-gray-600 text-gray-600'
+              }`}
             >
-              <SliderCard
-                title={item.title}
-                coverImage={item.coverImage}
-                hoverImage={item.hoverImage}
-              />
-            </div>
-          ))}
+              <ChevronLeft size={24} />
+            </button>
+            <button
+              onClick={() => slide('next')}
+              disabled={isAnimating}
+              className={`p-3 rounded-full border-2 transition-all duration-300 ${
+                !isAnimating
+                  ? 'border-red-500 text-red-500 hover:bg-red-500 hover:text-white'
+                  : 'border-gray-600 text-gray-600'
+              }`}
+            >
+              <ChevronRight size={24} />
+            </button>
+          </div>
+        </div>
+
+        {/* Right Slider Section */}
+        <div
+          className="relative z-10 flex items-center overflow-visible"
+          style={{ width: cardWidth * itemsPerView + gap * (itemsPerView - 1), height: 260 }}
+        >
+          <div
+            className="flex"
+            ref={trackRef}
+            style={{ 
+              transform: 'translateX(0px)', 
+              position: 'relative', 
+              zIndex: 5,
+              gap: `${gap}px`
+            }}
+          >
+            {sliderItems.map((item, index) => (
+              <div
+                key={item.id}
+                ref={(el) => (cardsRef.current[index] = el)}
+                style={{ width: cardWidth, height: 220 }}
+              >
+                <SliderCard
+                  title={item.title}
+                  coverImage={item.coverImage}
+                  hoverImage={item.hoverImage}
+                  width={cardWidth}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

@@ -5,17 +5,20 @@ interface SliderCardProps {
   coverImage: string;
   hoverImage: string;
   title: string;
+  width: number;
 }
 
-const SliderCard: React.FC<SliderCardProps> = ({ coverImage, hoverImage, title }) => {
+const SliderCard: React.FC<SliderCardProps> = ({ coverImage, hoverImage, title, width }) => {
   const [isHovered, setIsHovered] = useState(false);
-
+  
+  const cardHeight = width < 350 ? 200 : 250;
+  
   return (
     <div className="flex flex-col items-center select-none">
       {/* Carte animée */}
       <motion.div
         className="relative overflow-hidden rounded-xl bg-black/90 border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)] cursor-pointer"
-        style={{ width: 400, height: 250 }}
+        style={{ width: width, height: cardHeight }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         whileHover={{ scale: 1.03 }}
@@ -33,7 +36,19 @@ const SliderCard: React.FC<SliderCardProps> = ({ coverImage, hoverImage, title }
           loading="lazy"
           style={{ userSelect: 'none' }}
         />
-
+        
+        {/* Image au hover */}
+        <motion.img
+          src={hoverImage}
+          alt={title + ' hover'}
+          className="absolute inset-0 w-full h-full object-cover rounded-xl"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: isHovered ? 1 : 0 }}
+          transition={{ duration: 0.4, ease: 'easeInOut' }}
+          loading="lazy"
+          style={{ userSelect: 'none' }}
+        />
+        
         {/* Overlay sombre en dégradé */}
         <motion.div
           className="absolute inset-0 rounded-xl bg-gradient-to-t from-black/80 via-transparent to-transparent"
@@ -57,7 +72,8 @@ const SliderCard: React.FC<SliderCardProps> = ({ coverImage, hoverImage, title }
 
       {/* Titre */}
       <motion.h3
-        className="mt-4 w-[400px] pl-3 text-left text-white text-lg font-semibold tracking-wide drop-shadow-lg"
+        className="mt-4 text-center text-white text-base md:text-lg font-semibold tracking-wide drop-shadow-lg px-2"
+        style={{ width: width }}
         initial={{ y: 20, opacity: 0.8 }}
         animate={{ y: isHovered ? 0 : 20, opacity: isHovered ? 1 : 0.8 }}
         transition={{ duration: 0.3 }}

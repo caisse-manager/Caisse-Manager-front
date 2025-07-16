@@ -39,11 +39,6 @@ export default function ScrollPage() {
     const cards = gsap.utils.toArray<HTMLElement>('.stackCard')
     const stickDistance = 0
 
-    const firstCardST = ScrollTrigger.create({
-      trigger: cards[0],
-      start: 'center center',
-    })
-
     const lastCardST = ScrollTrigger.create({
       trigger: cards[cards.length - 1],
       start: 'center center',
@@ -55,7 +50,7 @@ export default function ScrollPage() {
       const scale = 1 - index * 0.025
       const scaleUp = gsap.to(card, {
         scale,
-        transformOrigin: '50% 160%', // vient d’en bas
+        transformOrigin: '50% 160%',
       })
 
       ScrollTrigger.create({
@@ -73,22 +68,19 @@ export default function ScrollPage() {
   }, [])
 
   return (
-        <>
-      {/* Spacer top */}
-      <section className="h-[1000px] bg-black relative overflow-hidden">
-        
-      </section>
-
-      {/* Card stacking section */}
-      <section className="overflow-hidden py-[60px] bg-black text-white font-[Poppins] relative">
-        {/* Subtle grid background */}
+    <>
+      <section className="min-h-[80vh] sm:min-h-[100vh] bg-black relative overflow-hidden" />
+      <section className="overflow-hidden py-12 md:py-20 bg-black text-white font-poppins relative">
         <div className="absolute inset-0 opacity-5">
-          <div className="w-full h-full" style={{
-            backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
-            backgroundSize: '50px 50px'
-          }}></div>
+          <div
+            className="w-full h-full"
+            style={{
+              backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
+              backgroundSize: '50px 50px',
+            }}
+          ></div>
         </div>
-        
+
         <div className="max-w-6xl mx-auto px-4 space-y-8 relative z-10">
           {[...cardsData].reverse().map((card, idx) => (
             <StackCard
@@ -104,9 +96,7 @@ export default function ScrollPage() {
           ))}
         </div>
       </section>
-
-      {/* Spacer bottom */}
-      <section className="h-[1000px] bg-black"></section>
+      <section className="min-h-[80vh] sm:min-h-[100vh] bg-black" />
     </>
   )
 }
