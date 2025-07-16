@@ -109,7 +109,7 @@ export default function Preloader({ onFinish }: PreloaderProps) {
     const redTransition = gsap.timeline()
 
     redTransition.to(redRef.current, {
-      duration: 0.5,
+      duration: 0.2,
       ease: 'power2.inOut',
       scale: 2.2,
       background:
@@ -145,7 +145,7 @@ export default function Preloader({ onFinish }: PreloaderProps) {
       containerRef.current,
       {
         y: '-100vh',
-        duration: 1,
+        duration: 0.5,
         ease: 'power3.inOut',
         delay: 1,
         onComplete: onFinish,
