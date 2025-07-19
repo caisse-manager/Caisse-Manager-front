@@ -3,10 +3,18 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
+import PreviousWorkCard from "./PreviousWorkCard";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const restaurants = [
+interface Restaurant {
+  video: string;
+  nom: string;
+  ville: string;
+  adresse: string;
+}
+
+const restaurants: Restaurant[] = [
   {
     video: "/clients/crusty.mp4",
     nom: "Crusty",
@@ -42,6 +50,7 @@ const restaurants = [
 export default function ClientsSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [activeCardIndex, setActiveCardIndex] = useState<number | null>(null);
   const [ctaActive, setCtaActive] = useState(false);
 
@@ -371,50 +380,14 @@ export default function ClientsSection() {
       <div ref={trackRef} className="flex w-max items-center gap-15 px-20">
         <div className="shrink-0" style={{ width: "20vw" }}></div>
 
-        {restaurants.map((restau, index) => (
-          <div
-            key={`${restau.nom}-${restau.ville}-${index}`}
-            className={`client-card min-w-[400px] h-[850px] px-6 py-8 rounded-3xl shadow-2xl flex flex-col items-center justify-between text-white text-xl font-semibold gap-6${
-              activeCardIndex === index ? " active-card" : ""
-            }`}
-          >
-            <div className="relative w-[400px] h-[850px] rounded-2xl overflow-hidden">
-              <video
-                src={restau.video}
-                autoPlay={false}
-                loop
-                playsInline
-                muted
-                className="w-full h-full object-cover transition-all duration-500"
-                style={{
-                  filter: "grayscale(1) brightness(0.8)",
-                }}
-                onLoadedMetadata={(e) => {
-                  const video = e.target as HTMLVideoElement;
-                  const ratio = video.videoWidth / video.videoHeight;
-                  video.style.width = "100%";
-                  video.style.height = `calc(100% / ${ratio})`;
-                }}
-                onLoadStart={(e) => {
-                  const video = e.target as HTMLVideoElement;
-                  video.pause();
-                }}
-              >
-                Your browser does not support the video tag.
-              </video>
-            </div>
-            <div className="client-info text-center opacity-0">
-              <h3 className="text-3xl font-black text-white tracking-tight leading-tight">
-                {restau.nom}
-              </h3>
-              <p className="text-xl text-gray-300 font-semibold mb-12">
-                <span className="font-bold text-white tracking-tight leading-tight">
-                  {restau.ville}
-                </span>
-                , {restau.adresse}
-              </p>
-            </div>
-          </div>
+        {restaurants.map((restaurant, index) => (
+          <PreviousWorkCard
+            key={`${restaurant.nom}-${restaurant.ville}-${index}`}
+            ref={(el) => { cardRefs.current[index] = el; }}
+            restaurant={restaurant}
+            index={index}
+            isActive={activeCardIndex === index}
+          />
         ))}
 
         <div className="client-card cta-card min-w-[400px] h-[600px] bg-[#111] dark:bg-[#111] rounded-3xl shadow-2xl cursor-pointer group overflow-hidden relative">
